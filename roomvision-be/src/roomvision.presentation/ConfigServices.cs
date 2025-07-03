@@ -1,5 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using roomvision.application.Interfaces.Mappers;
+using roomvision.application.Interfaces.Repositories;
 using roomvision.infrastructure.Contexts;
+using roomvision.infrastructure.Mappers;
+using roomvision.infrastructure.Repositories;
 
 namespace roomvision.presentation
 {
@@ -18,6 +22,10 @@ namespace roomvision.presentation
             });
 
             services.AddDbContext<PgSqlContext>(opt => opt.UseNpgsql(Environment.GetEnvironmentVariable("DATABASE")));
+
+            services.AddScoped<IGenericMapper, GenericMapper>();
+            services.AddScoped<IAccountRepository,AccountRepository>();
+            services.AddScoped<IDapi, Dapi>();
         }
     }
 }
