@@ -135,5 +135,6 @@ _NCrunch*
 .vs/
 
 Properties/
-triplo-be/src/appsettings.json
-triplo-be/src/appsettings.Development.json
+roomvision-be/src/appsettings.json
+roomvision-be/src/appsettings.Development.json
+.vscode/
