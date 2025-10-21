@@ -10,10 +10,9 @@ namespace roomvision.infrastructure.Contexts
 {
     public class PgSqlContext : DbContext
     {
-        public DbSet<Account> Accounts { get; set; }
-
-        public DbSet<PersonFace> PersonFaces { get; set; }
-
+        public DbSet<AccountDbModel> Accounts { get; set; }
+        public DbSet<RoomDbModel> Rooms { get; set; }
+        
         public PgSqlContext(DbContextOptions options) : base(options) { }   
 
     }

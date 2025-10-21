@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace roomvision.infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class RoomVision10 : Migration
+    public partial class RoomVision01 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,6 +17,7 @@ namespace roomvision.infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
                     Email = table.Column<string>(type: "text", nullable: true),
                     Password = table.Column<string>(type: "text", nullable: true)
                 },
@@ -26,19 +27,17 @@ namespace roomvision.infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PersonFaces",
+                name: "Rooms",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Firstname = table.Column<string>(type: "text", nullable: true),
-                    Lastname = table.Column<string>(type: "text", nullable: true),
-                    Encoding = table.Column<string>(type: "text", nullable: true),
-                    role = table.Column<int>(type: "integer", nullable: false)
+                    RoomName = table.Column<string>(type: "text", nullable: true),
+                    Password = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PersonFaces", x => x.Id);
+                    table.PrimaryKey("PK_Rooms", x => x.Id);
                 });
         }
 
@@ -49,7 +48,7 @@ namespace roomvision.infrastructure.Migrations
                 name: "Accounts");
 
             migrationBuilder.DropTable(
-                name: "PersonFaces");
+                name: "Rooms");
         }
     }
 }

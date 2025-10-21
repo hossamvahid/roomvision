@@ -21,7 +21,7 @@ namespace roomvision.infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("roomvision.infrastructure.Models.Account", b =>
+            modelBuilder.Entity("roomvision.infrastructure.Models.AccountDbModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -32,6 +32,9 @@ namespace roomvision.infrastructure.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("text");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
                     b.Property<string>("Password")
                         .HasColumnType("text");
 
@@ -40,7 +43,7 @@ namespace roomvision.infrastructure.Migrations
                     b.ToTable("Accounts");
                 });
 
-            modelBuilder.Entity("roomvision.infrastructure.Models.PersonFace", b =>
+            modelBuilder.Entity("roomvision.infrastructure.Models.RoomDbModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -48,21 +51,15 @@ namespace roomvision.infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Encoding")
+                    b.Property<string>("Password")
                         .HasColumnType("text");
 
-                    b.Property<string>("Firstname")
+                    b.Property<string>("RoomName")
                         .HasColumnType("text");
-
-                    b.Property<string>("Lastname")
-                        .HasColumnType("text");
-
-                    b.Property<int>("role")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.ToTable("PersonFaces");
+                    b.ToTable("Rooms");
                 });
 #pragma warning restore 612, 618
         }

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using roomvision.domain.Entities;
-using roomvision.application.Interfaces.Mappers;
+using roomvision.domain.Interfaces.Mappers;
 using roomvision.infrastructure.Models;
 
 namespace roomvision.infrastructure.Mappers
@@ -18,11 +18,12 @@ namespace roomvision.infrastructure.Mappers
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<Account, AccountEntity>();
-                cfg.CreateMap<AccountEntity, Account>();
-
-                cfg.CreateMap<PersonFace, PersonFaceEntity>();
-                cfg.CreateMap<PersonFaceEntity, PersonFace>();
+                cfg.CreateMap<RoomDbModel,Room>();
+                cfg.CreateMap<Room, RoomDbModel>();
+                
+                
+                cfg.CreateMap<AccountDbModel,Account>();
+                cfg.CreateMap<Account,AccountDbModel>();
             });
 
             mapper = config.CreateMapper();

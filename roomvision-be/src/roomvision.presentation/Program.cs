@@ -1,6 +1,13 @@
+using log4net;
+using log4net.Config;
 using Microsoft.EntityFrameworkCore;
 using roomvision.infrastructure.Contexts;
 using roomvision.presentation;
+using roomvision.presentation.Middleware;
+
+XmlConfigurator.Configure(new FileInfo("Log/log.xaml"));
+LogicalThreadContext.Properties["CorrelationId"] = Guid.NewGuid().ToString();
+ILog log = LogManager.GetLogger("SERVER");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +40,11 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseMiddleware<StartRequestMiddleware>();
+app.UseMiddleware<EndRequestMiddleware>();
+
+log.Info("Starting RoomVision");
 
 app.Run();
 

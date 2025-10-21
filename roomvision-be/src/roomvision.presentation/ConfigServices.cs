@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using roomvision.application.Interfaces.Mappers;
-using roomvision.application.Interfaces.Repositories;
+﻿using log4net;
+using Microsoft.EntityFrameworkCore;
+using roomvision.domain.Interfaces.Mappers;
 using roomvision.infrastructure.Contexts;
 using roomvision.infrastructure.Mappers;
-using roomvision.infrastructure.Repositories;
+
 
 namespace roomvision.presentation
 {
@@ -23,9 +23,13 @@ namespace roomvision.presentation
 
             services.AddDbContext<PgSqlContext>(opt => opt.UseNpgsql(Environment.GetEnvironmentVariable("DATABASE")));
 
+            //Mappers 
             services.AddScoped<IGenericMapper, GenericMapper>();
-            services.AddScoped<IAccountRepository,AccountRepository>();
-            services.AddScoped<IDapi, Dapi>();
+
+        
+            //Log
+            services.AddSingleton(LogManager.GetLogger("SERVER"));
+
         }
     }
 }

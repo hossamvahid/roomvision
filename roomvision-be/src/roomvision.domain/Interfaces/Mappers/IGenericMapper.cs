@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace roomvision.application.Interfaces.Mappers
+namespace roomvision.domain.Interfaces.Mappers
 {
     public interface IGenericMapper
     {
