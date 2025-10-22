@@ -21,7 +21,7 @@ namespace roomvision.presentation.Controllers
         }
 
         [HttpPost("user")]
-        public async Task<IActionResult> UserAuthenticate([FromBody] UserAuthentication request)
+        public async Task<IActionResult> UserAuthenticate([FromBody] AccountAuthentication request)
         {
             var result = await _authenticationService.UserAuthenticateAsync(request.Email!, request.Password!);
 

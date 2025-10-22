@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using roomvision.application.Interfaces.Servicies;
+using roomvision.application.Interfaces.Servicies.AccountServices;
 using roomvision.application.Servicies;
+using roomvision.application.Servicies.AccountServices;
 using roomvision.domain.Interfaces.Generators;
 using roomvision.domain.Interfaces.Mappers;
 using roomvision.domain.Interfaces.Repositories;
@@ -57,6 +59,7 @@ namespace roomvision.presentation
             //Generators
             services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddScoped<IPasswordGenerator, PasswordGenerator>();
+            services.AddScoped<IMailGenerator, MailGenerator>();
 
             //Repositories
             services.AddScoped<IAccountRepository, AccountRepository>();
@@ -64,6 +67,7 @@ namespace roomvision.presentation
 
             //Services
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<ICreateAccountService, CreateAccountService>();
         
             //Log
             services.AddSingleton(LogManager.GetLogger("SERVER"));
