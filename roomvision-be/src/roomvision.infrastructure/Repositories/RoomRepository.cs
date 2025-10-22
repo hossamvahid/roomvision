@@ -16,99 +16,53 @@ namespace roomvision.infrastructure.Repositories
     {
         private readonly IGenericMapper _mapper;
         private readonly PgSqlContext _context;
-        private readonly ILog _log;
 
-        public RoomRepository(IGenericMapper mapper, PgSqlContext context, ILog log)
+        public RoomRepository(IGenericMapper mapper, PgSqlContext context)
         {
             _mapper = mapper;
             _context = context;
-            _log = log;
         }
 
-        public async Task<Room?> GetById(int id)
+        public async Task<Room?> GetByIdAsync(int id)
         {
             var room = await _context.Rooms.FirstOrDefaultAsync(r => r.Id == id);
             if (room is null)
             {
-                _log.Info($"Room with id {id} not found.");
                 return null;
             }
-
-            _log.Info($"Room with id {id} retrieved successfully.");
             return _mapper.Map<RoomDbModel, Room>(room);
         }
 
-        public async Task<Room?> GetByRoomName(string roomName)
+        public async Task<Room?> GetByRoomNameAsync(string roomName)
         {
             var room = await _context.Rooms.FirstOrDefaultAsync(r => r.RoomName == roomName);
             if (room is null)
             {
-                _log.Info($"Room with name {roomName} not found.");
                 return null;
             }
 
-            _log.Info($"Room with name {roomName} retrieved successfully.");
             return _mapper.Map<RoomDbModel, Room>(room);
         }
 
-        public async Task<bool> AddAsync(Room room)
+        public async Task AddAsync(Room room)
         {
             var mappedRoom = _mapper.Map<Room, RoomDbModel>(room);
-
-            try
-            {
-                await _context.Rooms.AddAsync(mappedRoom);
-                await _context.SaveChangesAsync();
-                _log.Info($"Room with name {room.RoomName} added successfully.");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _log.Error(ex.Message);
-                return false;
-            }
+            await _context.Rooms.AddAsync(mappedRoom);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> UpdateAsync(Room room)
+        public async Task UpdateAsync(Room room)
         {
             var mappedRoom = _mapper.Map<Room, RoomDbModel>(room);
-
-            try
-            {
-                _log.Info($"Updating room with id {room.Id}.");
-                _context.Rooms.Update(mappedRoom);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _log.Error(ex.Message);
-                return false;
-            }
+            _context.Rooms.Update(mappedRoom);
+            await _context.SaveChangesAsync();
         }
         
-        public async Task<bool> DeleteAsync(int id)
+        public async Task DeleteAsync(Room room)
         {
-            var room = await _context.Rooms.FirstOrDefaultAsync(r => r.Id == id);
-           
-            if (room == null)
-            {
-                _log.Info($"Room with id {id} not found.");
-                return false;
-            }
-
-            try
-            {
-                _context.Rooms.Remove(room);
-                await _context.SaveChangesAsync();
-                _log.Info($"Room with id {id} deleted successfully.");
-                return true;
-            }
-            catch(Exception ex)
-            {
-                _log.Error(ex.Message);
-                return false;
-            }
+            var mappedRoom = _mapper.Map<Room, RoomDbModel>(room);
+            _context.Rooms.Remove(mappedRoom);
+            await _context.SaveChangesAsync();
         }
     }
 }

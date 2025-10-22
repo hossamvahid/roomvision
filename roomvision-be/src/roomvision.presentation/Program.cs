@@ -2,6 +2,7 @@ using log4net;
 using log4net.Config;
 using Microsoft.EntityFrameworkCore;
 using roomvision.infrastructure.Contexts;
+using roomvision.infrastructure.Seedings;
 using roomvision.presentation;
 using roomvision.presentation.Middleware;
 
@@ -24,6 +25,7 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var dbContextPgSQL = services.GetRequiredService<PgSqlContext>();
     dbContextPgSQL.Database.Migrate();
+    DatabaseSeeder.Initialize(services);
 }
 
 

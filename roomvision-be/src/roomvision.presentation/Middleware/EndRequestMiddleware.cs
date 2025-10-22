@@ -33,7 +33,7 @@ namespace roomvision.presentation.Middleware
                 context.Response.Clear();
 
                 var errorMessage = new { message = "Something went wrong with server" };
-                var jsonErrorMessage = JsonSerializer.Serialize(errorMessage);
+                var jsonErrorMessage = JsonSerializer.Serialize(errorMessage.message);
                 context.Response.ContentType = "application/json";
                 await context.Response.WriteAsync(jsonErrorMessage);
                 context.Response.StatusCode = 500;

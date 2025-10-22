@@ -138,3 +138,5 @@ Properties/
 roomvision-be/src/appsettings.json
 roomvision-be/src/appsettings.Development.json
 .vscode/
+private.pem
+public.pem
