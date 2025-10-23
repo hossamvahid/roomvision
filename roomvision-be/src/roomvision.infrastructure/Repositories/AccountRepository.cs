@@ -25,7 +25,7 @@ namespace roomvision.infrastructure.Repositories
 
         public async Task<Account?> GetByIdAsync(int id)
         {
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Id == id);
+            var account = await _context.Accounts.AsNoTracking().FirstOrDefaultAsync(a => a.Id == id);
 
             if (account is null)
             {

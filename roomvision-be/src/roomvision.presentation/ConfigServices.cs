@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography;
 using log4net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -68,6 +69,7 @@ namespace roomvision.presentation
             //Services
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<ICreateAccountService, CreateAccountService>();
+            services.AddScoped<IResetAccountPasswordService, ResetAccountPasswordService>();
         
             //Log
             services.AddSingleton(LogManager.GetLogger("SERVER"));
