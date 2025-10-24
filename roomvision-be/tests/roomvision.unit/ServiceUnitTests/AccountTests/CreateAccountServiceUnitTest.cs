@@ -6,6 +6,7 @@ using roomvision.domain.Entities;
 using roomvision.domain.Interfaces.Generators;
 using roomvision.domain.Interfaces.Repositories;
 using Xunit;
+using roomvision.domain.Interfaces.Security;
 
 namespace roomvision.unit.ServiceUnitTests.AccountTests
 {
@@ -14,7 +15,7 @@ namespace roomvision.unit.ServiceUnitTests.AccountTests
         private readonly Mock<IAccountRepository> _mockAccountRepository;
         private readonly Mock<ILog> _mockLog;
         private readonly Mock<IMailGenerator> _mockMailGenerator;
-        private readonly Mock<IPasswordGenerator> _mockPasswordGenerator;
+        private readonly Mock<IPasswordHasher> _mockPasswordHasher;
         private readonly CreateAccountService _createAccountService;
 
         public CreateAccountServiceUnitTest()
@@ -22,13 +23,13 @@ namespace roomvision.unit.ServiceUnitTests.AccountTests
             _mockAccountRepository = new Mock<IAccountRepository>();
             _mockLog = new Mock<ILog>();
             _mockMailGenerator = new Mock<IMailGenerator>();
-            _mockPasswordGenerator = new Mock<IPasswordGenerator>();
+            _mockPasswordHasher = new Mock<IPasswordHasher>();
 
             _createAccountService = new CreateAccountService(
                 _mockAccountRepository.Object,
                 _mockLog.Object,
                 _mockMailGenerator.Object,
-                _mockPasswordGenerator.Object);
+                _mockPasswordHasher.Object);
         }
 
         [Fact]
@@ -39,10 +40,13 @@ namespace roomvision.unit.ServiceUnitTests.AccountTests
             var hashedPassword = "$2b$10$eImiTXuWVxfM37uY4JANjOHJNRSaEs7yvPklS1ZzXegEKRmOSt2OG";
 
             _mockAccountRepository.Setup(r => r.GetByEmailAsync(email))
-                .ReturnsAsync((Account?)null); 
+                .ReturnsAsync((Account?)null);
 
-            _mockPasswordGenerator.Setup(p => p.GenerateHashedPassword(It.IsAny<string>()))
+
+
+            _mockPasswordHasher.Setup(p => p.GenerateHashedPassword(It.IsAny<string>()))
                 .Returns(hashedPassword);
+            
 
             _mockMailGenerator.Setup(m => m.WelcomeEmailAsync(email, It.IsAny<string>()))
                 .Returns(Task.CompletedTask);

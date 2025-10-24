@@ -4,6 +4,7 @@ using roomvision.application.Interfaces.Servicies;
 using roomvision.application.Utilities;
 using roomvision.domain.Interfaces.Generators;
 using roomvision.domain.Interfaces.Repositories;
+using roomvision.domain.Interfaces.Security;
 
 namespace roomvision.application.Servicies
 {
@@ -12,20 +13,20 @@ namespace roomvision.application.Servicies
         private readonly IAccountRepository _accountRepository;
         private readonly IRoomRepository _roomRepository;
         private readonly ITokenGenerator _tokenService;
-        private readonly IPasswordGenerator _passwordService;
+        private readonly IPasswordHasher _passwordHasher;
         private readonly ILog _log;
 
         public AuthenticationService(
             IAccountRepository accountRepository,
             IRoomRepository roomRepository,
             ITokenGenerator tokenService,
-            IPasswordGenerator passwordService,
+            IPasswordHasher passwordHasher,
             ILog log)
         {
             _accountRepository = accountRepository;
             _roomRepository = roomRepository;
             _tokenService = tokenService;
-            _passwordService = passwordService;
+            _passwordHasher = passwordHasher;
             _log = log;
         }
 
@@ -34,7 +35,7 @@ namespace roomvision.application.Servicies
             _log.Info($"Authenticating user with email: {email}");
             var account = await _accountRepository.GetByEmailAsync(email);
 
-            if (account is null || string.IsNullOrEmpty(account.Password) || PasswordUtility.VerifyPassword(password, account.Password) is false)
+            if (account is null || string.IsNullOrEmpty(account.Password) || _passwordHasher.VerifyHashedPassword(password, account.Password) is false)
             {
                 _log.Warn($"Authentication failed: Incorrect password for email {email}");
                 return Result<string>.Failure("Invalid email or password.", ErrorTypes.Unauthorized);
@@ -50,7 +51,7 @@ namespace roomvision.application.Servicies
             _log.Info($"Authenticating room with name: {roomName}");
             var room = await _roomRepository.GetByRoomNameAsync(roomName);
 
-            if (room is null || string.IsNullOrEmpty(room.Password) || PasswordUtility.VerifyPassword(password, room.Password) is false)
+            if (room is null || string.IsNullOrEmpty(room.Password) || _passwordHasher.VerifyHashedPassword(password, room.Password) is false)
             {
                 _log.Warn($"Authentication failed: Incorrect password for room with name {roomName}");
                 return Result<string>.Failure("Invalid room name or password.", ErrorTypes.Unauthorized);

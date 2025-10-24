@@ -6,6 +6,7 @@ using roomvision.domain.Entities;
 using roomvision.domain.Interfaces.Generators;
 using roomvision.domain.Interfaces.Repositories;
 using Xunit;
+using roomvision.domain.Interfaces.Security;
 
 namespace roomvision.unit.ServiceUnitTests
 {
@@ -14,7 +15,7 @@ namespace roomvision.unit.ServiceUnitTests
         private readonly Mock<IAccountRepository> _mockAccountRepository;
         private readonly Mock<IRoomRepository> _mockRoomRepository;
         private readonly Mock<ITokenGenerator> _mockTokenGenerator;
-        private readonly Mock<IPasswordGenerator> _mockPasswordGenerator;
+        private readonly Mock<IPasswordHasher> _mockPasswordHasher;
         private readonly Mock<ILog> _mockLog;
         private readonly AuthenticationService _authService;
 
@@ -23,14 +24,14 @@ namespace roomvision.unit.ServiceUnitTests
             _mockAccountRepository = new Mock<IAccountRepository>();
             _mockRoomRepository = new Mock<IRoomRepository>();
             _mockTokenGenerator = new Mock<ITokenGenerator>();
-            _mockPasswordGenerator = new Mock<IPasswordGenerator>();
+            _mockPasswordHasher = new Mock<IPasswordHasher>();
             _mockLog = new Mock<ILog>();
 
             _authService = new AuthenticationService(
                 _mockAccountRepository.Object,
                 _mockRoomRepository.Object,
                 _mockTokenGenerator.Object,
-                _mockPasswordGenerator.Object,
+                _mockPasswordHasher.Object,
                 _mockLog.Object);
         }
 
@@ -55,6 +56,9 @@ namespace roomvision.unit.ServiceUnitTests
 
             _mockTokenGenerator.Setup(t => t.GenerateUserToken(account))
                 .Returns(expectedToken);
+            
+            _mockPasswordHasher.Setup(p => p.VerifyHashedPassword(plainPassword, hashedPassword))
+                .Returns(true);
 
 
             var result = await _authService.UserAuthenticateAsync(email, plainPassword);
@@ -98,6 +102,9 @@ namespace roomvision.unit.ServiceUnitTests
 
             _mockAccountRepository.Setup(r => r.GetByEmailAsync(email))
                 .ReturnsAsync(account);
+
+            _mockPasswordHasher.Setup(p => p.VerifyHashedPassword(wrongPassword, hashedPassword))
+                .Returns(false);
 
             var result = await _authService.UserAuthenticateAsync(email, wrongPassword);
 

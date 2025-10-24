@@ -5,25 +5,26 @@ using roomvision.application.Servicies.AccountServices;
 using roomvision.domain.Entities;
 using roomvision.domain.Interfaces.Generators;
 using roomvision.domain.Interfaces.Repositories;
+using roomvision.domain.Interfaces.Security;
 
 namespace roomvision.unit.ServiceUnitTests.AccountTests
 {
     public class ResetAccountPasswordServiceUnitTest
     {
         private readonly Mock<IAccountRepository> _mockAccountRepository;
-        private readonly Mock<IPasswordGenerator> _mockPasswordGenerator;
+        private readonly Mock<IPasswordHasher> _mockPasswordHasher;
         private readonly Mock<ILog> _mockLog;
         private readonly ResetAccountPasswordService _resetPasswordService;
 
         public ResetAccountPasswordServiceUnitTest()
         {
             _mockAccountRepository = new Mock<IAccountRepository>();
-            _mockPasswordGenerator = new Mock<IPasswordGenerator>();
+            _mockPasswordHasher = new Mock<IPasswordHasher>();
             _mockLog = new Mock<ILog>();
 
             _resetPasswordService = new ResetAccountPasswordService(
                 _mockAccountRepository.Object,
-                _mockPasswordGenerator.Object,
+                _mockPasswordHasher.Object,
                 _mockLog.Object);
         }
 
@@ -45,7 +46,7 @@ namespace roomvision.unit.ServiceUnitTests.AccountTests
             _mockAccountRepository.Setup(r => r.GetByIdAsync(accountId))
                 .ReturnsAsync(existingAccount);
 
-            _mockPasswordGenerator.Setup(p => p.GenerateHashedPassword(newPassword))
+            _mockPasswordHasher.Setup(p => p.GenerateHashedPassword(newPassword))
                 .Returns(hashedPassword);
 
             var result = await _resetPasswordService.Execute(accountId, newPassword);

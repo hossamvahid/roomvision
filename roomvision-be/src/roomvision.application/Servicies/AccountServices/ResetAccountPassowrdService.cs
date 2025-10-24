@@ -7,22 +7,23 @@ using roomvision.application.Common;
 using roomvision.application.Interfaces.Servicies.AccountServices;
 using roomvision.domain.Interfaces.Generators;
 using roomvision.domain.Interfaces.Repositories;
+using roomvision.domain.Interfaces.Security;
 
 namespace roomvision.application.Servicies.AccountServices
 {
     public class ResetAccountPasswordService : IResetAccountPasswordService
     {
         private readonly IAccountRepository _accountRepository;
-        private readonly IPasswordGenerator _passwordGenerator;
+        private readonly IPasswordHasher _passwordHasher;
         private readonly ILog _log;
         
         public ResetAccountPasswordService(
             IAccountRepository accountRepository,
-            IPasswordGenerator passwordGenerator,
+            IPasswordHasher passwordHasher,
             ILog log)
         {
             _accountRepository = accountRepository;
-            _passwordGenerator = passwordGenerator;
+            _passwordHasher = passwordHasher;
             _log = log;
         }
         public async Task<Result> Execute(int id, string newPassword)
@@ -36,7 +37,7 @@ namespace roomvision.application.Servicies.AccountServices
                 return Result.Failure("Account not found.", ErrorTypes.NotFound);
             }
 
-            var hashedNewPassword = _passwordGenerator.GenerateHashedPassword(newPassword);
+            var hashedNewPassword = _passwordHasher.GenerateHashedPassword(newPassword);
             account.Password = hashedNewPassword;
 
             await _accountRepository.UpdateAsync(account);

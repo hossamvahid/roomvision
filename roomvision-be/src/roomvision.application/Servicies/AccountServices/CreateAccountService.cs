@@ -9,6 +9,7 @@ using roomvision.application.Utilities;
 using roomvision.domain.Entities;
 using roomvision.domain.Interfaces.Generators;
 using roomvision.domain.Interfaces.Repositories;
+using roomvision.domain.Interfaces.Security;
 
 namespace roomvision.application.Servicies.AccountServices
 {
@@ -17,18 +18,18 @@ namespace roomvision.application.Servicies.AccountServices
         private readonly IAccountRepository _accountRepository;
         private readonly ILog _log;
         private readonly IMailGenerator _mailGenerator;
-        private readonly IPasswordGenerator _passwordGenerator;
+        private readonly IPasswordHasher _passwordHasher;
 
         public CreateAccountService(
             IAccountRepository accountRepository,
             ILog log,
             IMailGenerator mailGenerator,
-            IPasswordGenerator passwordGenerator)
+            IPasswordHasher passwordHasher)
         {
             _accountRepository = accountRepository;
             _log = log;
             _mailGenerator = mailGenerator;
-            _passwordGenerator = passwordGenerator;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<Result> Execute(string email, string name)
@@ -49,7 +50,7 @@ namespace roomvision.application.Servicies.AccountServices
             {
                 Email = email,
                 Name = name,
-                Password = _passwordGenerator.GenerateHashedPassword(password)
+                Password = _passwordHasher.GenerateHashedPassword(password)
             };
             
             _log.Info("Saving account and sending welcome email.");

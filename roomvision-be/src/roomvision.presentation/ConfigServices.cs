@@ -11,10 +11,12 @@ using roomvision.application.Servicies.AccountServices;
 using roomvision.domain.Interfaces.Generators;
 using roomvision.domain.Interfaces.Mappers;
 using roomvision.domain.Interfaces.Repositories;
+using roomvision.domain.Interfaces.Security;
 using roomvision.infrastructure.Contexts;
 using roomvision.infrastructure.Generators;
 using roomvision.infrastructure.Mappers;
 using roomvision.infrastructure.Repositories;
+using roomvision.infrastructure.Security;
 
 
 namespace roomvision.presentation
@@ -59,7 +61,7 @@ namespace roomvision.presentation
 
             //Generators
             services.AddScoped<ITokenGenerator, TokenGenerator>();
-            services.AddScoped<IPasswordGenerator, PasswordGenerator>();
+            services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
             services.AddScoped<IMailGenerator, MailGenerator>();
 
             //Repositories

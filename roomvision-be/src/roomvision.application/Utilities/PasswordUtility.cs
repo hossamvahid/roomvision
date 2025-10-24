@@ -11,24 +11,10 @@ namespace roomvision.application.Utilities
     /// Utility class for password operations such as generation and verification.
     /// </summary>
     /// <remarks>
-    /// This class provides methods for generating strong passwords and verifying hashed passwords.
+    /// This class provides methods for password generation and other related utilities.
     /// </remarks>
     public static class PasswordUtility
     {
-        /// <summary>
-        /// Verifies a plain text password against a hashed password.
-        /// </summary>
-        /// <remarks>
-        /// This method compares a plain text password with a BCrypt hashed password.
-        /// </remarks>
-        /// <param name="password">The plain text password to verify.</param>
-        /// <param name="hashedPassword">The hashed password to compare against.</param>
-        /// <returns>True if the password matches the hashed password; otherwise, false.</returns
-        public static bool VerifyPassword(string password, string hashedPassword)
-        {
-            return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
-        }
-
         /// <summary>
         /// Generates a strong random password.
         /// </summary>
