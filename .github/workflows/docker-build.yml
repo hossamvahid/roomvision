@@ -28,5 +28,5 @@ jobs:
       env:
         IMAGE_NAME: ghcr.io/${{ github.repository }}/roomvision-be
       run: |
-        docker build ./roomvision-be --file ./roomvision-be/src/Dockerfile --tag $IMAGE_NAME:latest
+        docker build ./roomvision-be/src --file ./roomvision-be/src/Dockerfile --tag $IMAGE_NAME:latest
         docker push $IMAGE_NAME:latest
