@@ -33,12 +33,8 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Include="public.pem">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="private.pem">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="public.pem"></None>
+    <None Include="private.pem"></None>
   </ItemGroup>
 
 </Project>
