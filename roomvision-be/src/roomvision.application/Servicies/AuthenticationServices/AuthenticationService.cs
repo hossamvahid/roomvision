@@ -12,20 +12,20 @@ namespace roomvision.application.Servicies
     {
         private readonly IAccountRepository _accountRepository;
         private readonly IRoomRepository _roomRepository;
-        private readonly ITokenGenerator _tokenService;
+        private readonly ITokenGenerator _tokenGenerator;
         private readonly IPasswordHasher _passwordHasher;
         private readonly ILog _log;
 
         public AuthenticationService(
             IAccountRepository accountRepository,
             IRoomRepository roomRepository,
-            ITokenGenerator tokenService,
+            ITokenGenerator tokenGenerator,
             IPasswordHasher passwordHasher,
             ILog log)
         {
             _accountRepository = accountRepository;
             _roomRepository = roomRepository;
-            _tokenService = tokenService;
+            _tokenGenerator = tokenGenerator;
             _passwordHasher = passwordHasher;
             _log = log;
         }
@@ -41,7 +41,7 @@ namespace roomvision.application.Servicies
                 return Result<string>.Failure("Invalid email or password.", ErrorTypes.Unauthorized);
             }
 
-            var token = _tokenService.GenerateUserToken(account);
+            var token = _tokenGenerator.GenerateUserToken(account);
             _log.Info($"User with email {email} authenticated successfully.");
             return Result<string>.Success(token);
         }
@@ -57,7 +57,7 @@ namespace roomvision.application.Servicies
                 return Result<string>.Failure("Invalid room name or password.", ErrorTypes.Unauthorized);
             }
 
-            var token = _tokenService.GenerateRoomToken(room);
+            var token = _tokenGenerator.GenerateRoomToken(room);
             _log.Info($"Room with name {roomName} authenticated successfully.");
             return Result<string>.Success(token);
         }
