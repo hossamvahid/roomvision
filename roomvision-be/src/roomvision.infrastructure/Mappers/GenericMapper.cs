@@ -23,7 +23,11 @@ namespace roomvision.infrastructure.Mappers
                 
                 
                 cfg.CreateMap<AccountDbModel,Account>();
-                cfg.CreateMap<Account,AccountDbModel>();
+                cfg.CreateMap<Account, AccountDbModel>();
+
+
+                cfg.CreateMap<FaceDbModel, Face>();
+                cfg.CreateMap<Face, FaceDbModel>();
             });
 
             mapper = config.CreateMapper();

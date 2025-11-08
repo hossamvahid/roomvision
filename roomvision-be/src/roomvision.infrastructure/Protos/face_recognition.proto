@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package facerecognition;
+option csharp_namespace = "FaceRecognitionGrpc";
+
+service FaceRecognition {
+  rpc EncodeFace (EncodeRequest) returns (EncodeResponse);
+}
+
+message EncodeRequest {
+    bytes image = 1;
+}
+
+message EncodeResponse {
+    repeated float encoding = 1;
+}

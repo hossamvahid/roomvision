@@ -6,13 +6,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using roomvision.application.Interfaces.Servicies;
 using roomvision.application.Interfaces.Servicies.AccountServices;
+using roomvision.application.Interfaces.Servicies.FaceServices;
 using roomvision.application.Servicies;
 using roomvision.application.Servicies.AccountServices;
+using roomvision.application.Servicies.FaceServices;
+using roomvision.domain.Interfaces.FaceRecognition;
 using roomvision.domain.Interfaces.Generators;
 using roomvision.domain.Interfaces.Mappers;
 using roomvision.domain.Interfaces.Repositories;
 using roomvision.domain.Interfaces.Security;
 using roomvision.infrastructure.Contexts;
+using roomvision.infrastructure.FaceRecognition;
 using roomvision.infrastructure.Generators;
 using roomvision.infrastructure.Mappers;
 using roomvision.infrastructure.Repositories;
@@ -35,9 +39,13 @@ namespace roomvision.presentation
                 });
             });
 
-            services.AddDbContext<PgSqlContext>(opt => opt.UseNpgsql(Environment.GetEnvironmentVariable("DATABASE")));
-
-
+            services.AddDbContext<PgSqlContext>(opt => opt.UseNpgsql(Environment.GetEnvironmentVariable("POSTGRES_DATABASE")));
+            
+            var mongoClient = new MongoDB.Driver.MongoClient(Environment.GetEnvironmentVariable("MONGODB_CONNECTION"));
+            var mongoDatabase = mongoClient.GetDatabase(Environment.GetEnvironmentVariable("MONGODB_DATABASE"));
+            services.AddSingleton(mongoDatabase);
+            services.AddSingleton<MongoDbContext>();
+            
             RSA publicKey = RSA.Create();
             var publicKeyPem = File.ReadAllText("public.pem");
             publicKey.ImportFromPem(publicKeyPem.ToCharArray());
@@ -64,15 +72,20 @@ namespace roomvision.presentation
             services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
             services.AddScoped<IMailGenerator, MailGenerator>();
 
-            //Repositories
+            //Face Recognition
+            services.AddScoped<IFaceRecognition, GrpcFaceRecognition>();
+
+            //Repositories`
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<IRoomRepository, RoomRepository>();
+            services.AddScoped<IFaceRepository, FaceRepository>();
 
             //Services
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<ICreateAccountService, CreateAccountService>();
             services.AddScoped<IResetAccountPasswordService, ResetAccountPasswordService>();
-        
+            services.AddScoped<ICreateFaceService, CreateFaceService>();
+            
             //Log
             services.AddSingleton(LogManager.GetLogger("SERVER"));
 
