@@ -1,0 +1,20 @@
+# --- Python venv ---
+venv/
+.env/
+env/
+.venv/
+.env
+
+# --- Byte-compiled / cache ---
+__pycache__/
+*.py[cod]
+
+# --- gRPC generated files (optional, pot fi regenerate) ---
+protos/*_pb2.py
+protos/*_pb2_grpc.py
+
+# --- Logs / temp ---
+*.log
+*.tmp
+*.bak
+

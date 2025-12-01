@@ -10,17 +10,16 @@ public class GrpcFaceRecognition : IFaceRecognition
 
     public GrpcFaceRecognition(FaceRecognitionClient client)
     {
-        var channel = GrpcChannel.ForAddress(Environment.GetEnvironmentVariable("FACE_RECOGNITION_GRPC_URL")!);
-        _client = new FaceRecognitionClient(channel);
+        _client = client;
     }
 
     public async Task<float[]> EncodeFaceAsync(byte[] imageData)
     {
         var image = Google.Protobuf.ByteString.CopyFrom(imageData);
 
-        var request = new FaceRecognitionGrpc.EncodeRequest
+        var request = new FaceRecognitionGrpc.Image
         {
-            Image = image
+            Image_ = image
         };
 
         var response = await _client.EncodeFaceAsync(request);

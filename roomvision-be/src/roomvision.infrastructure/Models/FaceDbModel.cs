@@ -6,7 +6,7 @@ namespace roomvision.infrastructure.Models;
 public class FaceDbModel
 {
     [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
+    [BsonRepresentation(BsonType.String)]
     [BsonRequired]
     public string? Id { get; set; }
 

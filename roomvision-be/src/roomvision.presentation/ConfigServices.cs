@@ -21,7 +21,7 @@ using roomvision.infrastructure.Generators;
 using roomvision.infrastructure.Mappers;
 using roomvision.infrastructure.Repositories;
 using roomvision.infrastructure.Security;
-
+using FaceRecognitionClient = FaceRecognitionGrpc.FaceRecognition.FaceRecognitionClient;
 
 namespace roomvision.presentation
 {
@@ -73,6 +73,11 @@ namespace roomvision.presentation
             services.AddScoped<IMailGenerator, MailGenerator>();
 
             //Face Recognition
+            services.AddScoped<FaceRecognitionClient>(provider =>
+            {
+                var channel = Grpc.Net.Client.GrpcChannel.ForAddress(Environment.GetEnvironmentVariable("FACE_RECOGNITION_GRPC_URL")!);
+                return new FaceRecognitionClient(channel);
+            });
             services.AddScoped<IFaceRecognition, GrpcFaceRecognition>();
 
             //Repositories`
