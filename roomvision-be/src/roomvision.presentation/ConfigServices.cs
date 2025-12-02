@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using roomvision.application.Interfaces.Servicies;
 using roomvision.application.Interfaces.Servicies.AccountServices;
-using roomvision.application.Interfaces.Servicies.FaceServices;
+using roomvision.application.Interfaces.Servicies.PersonServices;
 using roomvision.application.Servicies;
 using roomvision.application.Servicies.AccountServices;
-using roomvision.application.Servicies.FaceServices;
+using roomvision.application.Servicies.PersonServices;
 using roomvision.domain.Interfaces.FaceRecognition;
 using roomvision.domain.Interfaces.Generators;
 using roomvision.domain.Interfaces.Mappers;
@@ -83,13 +83,13 @@ namespace roomvision.presentation
             //Repositories`
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<IRoomRepository, RoomRepository>();
-            services.AddScoped<IFaceRepository, FaceRepository>();
+            services.AddScoped<IPersonRepository, PersonRepository>();
 
             //Services
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<ICreateAccountService, CreateAccountService>();
             services.AddScoped<IResetAccountPasswordService, ResetAccountPasswordService>();
-            services.AddScoped<ICreateFaceService, CreateFaceService>();
+            services.AddScoped<ICreatePersonService, CreatePersonService>();
             
             //Log
             services.AddSingleton(LogManager.GetLogger("SERVER"));

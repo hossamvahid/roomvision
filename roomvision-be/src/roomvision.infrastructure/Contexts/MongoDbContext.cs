@@ -6,9 +6,9 @@ namespace roomvision.infrastructure.Contexts;
 
 public class MongoDbContext
 {
-    public IMongoCollection<FaceDbModel> Faces { get; }
+    public IMongoCollection<PersonDbModel> Persons { get; }
     public MongoDbContext(IMongoDatabase database)
     {
-        Faces = database.GetCollection<FaceDbModel>("Faces");
+        Persons = database.GetCollection<PersonDbModel>("Persons");
     }
 }

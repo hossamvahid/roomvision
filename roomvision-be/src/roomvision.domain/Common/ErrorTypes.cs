@@ -1,4 +1,4 @@
-namespace roomvision.application.Common
+namespace roomvision.domain.Common
 {
     public enum ErrorTypes
     {

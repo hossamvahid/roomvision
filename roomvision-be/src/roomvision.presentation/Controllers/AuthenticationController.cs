@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using roomvision.application.Common;
+using roomvision.domain.Common;
 using roomvision.application.Interfaces.Servicies;
 using roomvision.presentation.Request;
 

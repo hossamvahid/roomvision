@@ -4,16 +4,21 @@ package facerecognition;
 option csharp_namespace = "FaceRecognitionGrpc";
 
 service FaceRecognition {
-  rpc EncodeFace (Image) returns (EncodeResponse);
+  rpc EmbedFace (Face) returns (EmbedResponse);
   rpc VerifyRoom (Image) returns (PersonsInRoom);
 }
 
-message Image {
-    bytes image = 1;
+message Face {
+  string person_name = 1;
+  bytes image = 2;
 }
 
-message EncodeResponse {
-    repeated float encoding = 1;
+message Image {
+  bytes image = 1;
+}
+
+message EmbedResponse {
+    repeated float embedding = 1;
 }
 
 message PersonsInRoom {

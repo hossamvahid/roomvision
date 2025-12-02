@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace roomvision.application.Common
+namespace roomvision.domain.Common
 {
     public class Result
     {

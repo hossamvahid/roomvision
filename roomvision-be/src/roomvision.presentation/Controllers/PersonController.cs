@@ -1,20 +1,20 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using roomvision.application.Common;
-using roomvision.application.Interfaces.Servicies.FaceServices;
+using roomvision.domain.Common;
+using roomvision.application.Interfaces.Servicies.PersonServices;
 
 namespace roomvision.presentation.Controllers
 {
-    [Route("api/v1/face")]
+    [Route("api/v1/person")]
     [ApiController]
-    public class FaceController : ControllerBase
+    public class PersonController : ControllerBase
     {
-        private readonly ICreateFaceService _createFaceService;
+        private readonly ICreatePersonService _createPersonService;
 
-        public FaceController(ICreateFaceService createFaceService)
+        public PersonController(ICreatePersonService createPersonService)
         {
-            _createFaceService = createFaceService;
+            _createPersonService = createPersonService;
         }
 
         [HttpPost("create")]
@@ -29,13 +29,14 @@ namespace roomvision.presentation.Controllers
             using var memoryStream = new MemoryStream();
             await file.CopyToAsync(memoryStream);
 
-            var result = await _createFaceService.Execute(personName, memoryStream.ToArray());
+            var result = await _createPersonService.Execute(personName, memoryStream.ToArray());
             if (result.IsFailure)
             {
                 return result.ErrorType switch
                 {
-                    ErrorTypes.NotFound => NotFound(result),
-                    _ => StatusCode(500, result)
+                    ErrorTypes.NotFound => NotFound(new{Error = result.Error}),
+                    ErrorTypes.Conflict => Conflict(new{Error = result.Error}),
+                    _ => StatusCode(500, new{Error = result.Error})
                 };
             }
             return Ok();

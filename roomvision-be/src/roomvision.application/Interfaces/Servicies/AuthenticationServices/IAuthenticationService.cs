@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using roomvision.application.Common;
+using roomvision.domain.Common;
 
 namespace roomvision.application.Interfaces.Servicies
 {

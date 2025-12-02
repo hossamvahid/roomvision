@@ -3,7 +3,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace roomvision.infrastructure.Models;
-public class FaceDbModel
+public class PersonDbModel
 {
     [BsonId]
     [BsonRepresentation(BsonType.String)]
@@ -12,10 +12,10 @@ public class FaceDbModel
 
     [BsonElement("PersonName")]
     [BsonRequired]
-    public string? PersonName { get; set; }
+    public string? Name { get; set; }
 
-    [BsonElement("Encoding")]
+    [BsonElement("CreatedAt")]
     [BsonRequired]
-    public float[]? Encoding { get; set; }
+    public DateOnly CreatedAt { get; set; }
 
 }

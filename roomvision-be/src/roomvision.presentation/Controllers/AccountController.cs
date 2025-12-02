@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using roomvision.application.Common;
+using roomvision.domain.Common;
 using roomvision.application.Interfaces.Servicies.AccountServices;
 using roomvision.presentation.Request.AccountRequest;
 

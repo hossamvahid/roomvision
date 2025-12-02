@@ -1,6 +1,6 @@
 using Moq;
 using log4net;
-using roomvision.application.Common;
+using roomvision.domain.Common;
 using roomvision.application.Servicies.AccountServices;
 using roomvision.domain.Entities;
 using roomvision.domain.Interfaces.Generators;
