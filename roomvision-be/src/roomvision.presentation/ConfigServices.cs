@@ -93,6 +93,7 @@ namespace roomvision.presentation
             services.AddScoped<IResetAccountPasswordService, ResetAccountPasswordService>();
             services.AddScoped<ICreatePersonService, CreatePersonService>();
             services.AddScoped<IScanRoomService, ScanRoomService>();
+            services.AddScoped<IScanResultService, ScanResultService>();
             
             //Log
             services.AddSingleton(LogManager.GetLogger("SERVER"));
