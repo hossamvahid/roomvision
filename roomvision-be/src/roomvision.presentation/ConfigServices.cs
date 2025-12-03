@@ -1,5 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using log4net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -7,9 +6,11 @@ using Microsoft.IdentityModel.Tokens;
 using roomvision.application.Interfaces.Servicies;
 using roomvision.application.Interfaces.Servicies.AccountServices;
 using roomvision.application.Interfaces.Servicies.PersonServices;
+using roomvision.application.Interfaces.Servicies.RoomServices;
 using roomvision.application.Servicies;
 using roomvision.application.Servicies.AccountServices;
 using roomvision.application.Servicies.PersonServices;
+using roomvision.application.Servicies.RoomServices;
 using roomvision.domain.Interfaces.FaceRecognition;
 using roomvision.domain.Interfaces.Generators;
 using roomvision.domain.Interfaces.Mappers;
@@ -84,12 +85,14 @@ namespace roomvision.presentation
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<IRoomRepository, RoomRepository>();
             services.AddScoped<IPersonRepository, PersonRepository>();
+            services.AddScoped<IScannedRoomRepository, ScannedRoomRepository>();
 
             //Services
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<ICreateAccountService, CreateAccountService>();
             services.AddScoped<IResetAccountPasswordService, ResetAccountPasswordService>();
             services.AddScoped<ICreatePersonService, CreatePersonService>();
+            services.AddScoped<IScanRoomService, ScanRoomService>();
             
             //Log
             services.AddSingleton(LogManager.GetLogger("SERVER"));

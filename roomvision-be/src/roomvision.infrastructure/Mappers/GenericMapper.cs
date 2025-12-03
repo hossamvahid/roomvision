@@ -28,6 +28,9 @@ namespace roomvision.infrastructure.Mappers
 
                 cfg.CreateMap<PersonDbModel, Person>();
                 cfg.CreateMap<Person, PersonDbModel>();
+
+                cfg.CreateMap<ScannedRoomDbModel, ScannedRoom>();
+                cfg.CreateMap<ScannedRoom, ScannedRoomDbModel>();
             });
 
             mapper = config.CreateMapper();

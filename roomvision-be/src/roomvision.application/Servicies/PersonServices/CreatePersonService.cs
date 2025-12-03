@@ -4,6 +4,7 @@ using roomvision.application.Interfaces.Servicies.PersonServices;
 using roomvision.domain.Entities;
 using roomvision.domain.Interfaces.FaceRecognition;
 using roomvision.domain.Interfaces.Repositories;
+using log4net;
 
 namespace roomvision.application.Servicies.PersonServices;
 
@@ -11,25 +12,31 @@ public class CreatePersonService : ICreatePersonService
 {
     private readonly IPersonRepository _personRepository;
     private readonly IFaceRecognition _faceRecognition;
-    public CreatePersonService(IPersonRepository personRepository, IFaceRecognition faceRecognition)
+    private readonly ILog _log;
+
+    public CreatePersonService(IPersonRepository personRepository, IFaceRecognition faceRecognition, ILog log)
     {
         _personRepository = personRepository;
         _faceRecognition = faceRecognition;
+        _log = log;
     }
 
     public async Task<Result> Execute(string personName, byte[] imageFile)
     {
-
+        _log.Info($"Creating person: {personName}");
         var foundPerson = await _personRepository.GetByNameAsync(personName);
         if (foundPerson is not null)
         {
+            _log.Error($"Person creation failed: Person with name {personName} already exists.");
             return Result.Failure("Person with the same name already exists.", ErrorTypes.Conflict);
         }
 
+        _log.Info($"Embedding face for person: {personName}");
         var result = await _faceRecognition.EmbedFaceAsync(personName, imageFile);
         
         if(result.IsFailure)
         {
+            _log.Error($"Face embedding failed for person {personName}: {result.Error}");
             return Result.Failure(result.Error!, result.ErrorType!.Value);
         }
 
@@ -39,6 +46,8 @@ public class CreatePersonService : ICreatePersonService
             Name = personName,
             CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),       
         };
+        
+        _log.Info($"Person created successfully: {personName}");
         await _personRepository.AddAsync(person);
         return Result.Success();
     }
