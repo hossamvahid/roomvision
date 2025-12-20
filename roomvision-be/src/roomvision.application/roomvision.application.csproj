@@ -12,6 +12,11 @@
   </ItemGroup>
 
 
+  <ItemGroup>
+    <Folder Include="Models/" />
+  </ItemGroup>
+
+
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>

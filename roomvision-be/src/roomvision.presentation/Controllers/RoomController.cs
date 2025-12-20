@@ -13,18 +13,20 @@ namespace roomvision.presentation.Controllers
     {
         private readonly IScanRoomService _scanRoomService;
         private readonly IScanResultService _scanResultService;
+        private readonly IGetRooms _getRooms;
 
-        public RoomController(IScanRoomService scanRoomService, IScanResultService scanResultService)
+        public RoomController(IScanRoomService scanRoomService, IScanResultService scanResultService, IGetRooms getRooms)
         {
             _scanRoomService = scanRoomService;
             _scanResultService = scanResultService;
+            _getRooms = getRooms;
         }
 
         [HttpPost("scan")]
         [Authorize(Roles = "Room")]
         public async Task<IActionResult> ScanRoom([FromQuery] string room)
         {
-            if(string.IsNullOrEmpty(room))
+            if (string.IsNullOrEmpty(room))
             {
                 return BadRequest("Room name is required.");
             }
@@ -54,7 +56,7 @@ namespace roomvision.presentation.Controllers
         [Authorize(Roles = "Room")]
         public async Task<IActionResult> GetScanResult([FromQuery] string room)
         {
-            if(string.IsNullOrEmpty(room))
+            if (string.IsNullOrEmpty(room))
             {
                 return BadRequest("Room name is required.");
             }
@@ -77,8 +79,16 @@ namespace roomvision.presentation.Controllers
                 IdentifiedFaces = result.Value!.IdentifiedFaces,
                 ScannedAt = result.Value.ScannedAt
             };
-            
+
             return Ok(mappedResult);
+        }
+
+        [HttpGet("get")]
+        [Authorize(Roles = "Account")]
+        public async Task<IActionResult> GetRooms([FromQuery] int page, [FromQuery] int pageSize = 6)
+        {
+            var result = await _getRooms.Execute(page, pageSize);
+            return Ok(result.Value);
         }
     }
 }

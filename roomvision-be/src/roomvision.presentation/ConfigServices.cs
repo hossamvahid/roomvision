@@ -7,6 +7,7 @@ using roomvision.application.Interfaces.Servicies;
 using roomvision.application.Interfaces.Servicies.AccountServices;
 using roomvision.application.Interfaces.Servicies.PersonServices;
 using roomvision.application.Interfaces.Servicies.RoomServices;
+using roomvision.application.Projections;
 using roomvision.application.Servicies;
 using roomvision.application.Servicies.AccountServices;
 using roomvision.application.Servicies.PersonServices;
@@ -41,12 +42,12 @@ namespace roomvision.presentation
             });
 
             services.AddDbContext<PgSqlContext>(opt => opt.UseNpgsql(Environment.GetEnvironmentVariable("POSTGRES_DATABASE")));
-            
+
             var mongoClient = new MongoDB.Driver.MongoClient(Environment.GetEnvironmentVariable("MONGODB_CONNECTION"));
             var mongoDatabase = mongoClient.GetDatabase(Environment.GetEnvironmentVariable("MONGODB_DATABASE"));
             services.AddSingleton(mongoDatabase);
             services.AddSingleton<MongoDbContext>();
-            
+
             RSA publicKey = RSA.Create();
             var publicKeyPem = File.ReadAllText("public.pem");
             publicKey.ImportFromPem(publicKeyPem.ToCharArray());
@@ -94,9 +95,13 @@ namespace roomvision.presentation
             services.AddScoped<ICreatePersonService, CreatePersonService>();
             services.AddScoped<IScanRoomService, ScanRoomService>();
             services.AddScoped<IScanResultService, ScanResultService>();
-            
+            services.AddScoped<IGetRooms, GetRooms>();
+
             //Log
             services.AddSingleton(LogManager.GetLogger("SERVER"));
+
+            //Projections
+            services.AddScoped<RoomWithScanProjection>();
 
         }
     }

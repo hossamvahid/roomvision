@@ -44,6 +44,23 @@ namespace roomvision.infrastructure.Repositories
             return _mapper.Map<RoomDbModel, Room>(room);
         }
 
+        public async Task<IReadOnlyList<Room>> GetPagedAsync(int page, int pageSize)
+        {
+            var pagedRooms = await _context.Rooms
+            .AsNoTracking()
+            .OrderBy(r => r.RoomName)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+            return _mapper.Map<List<RoomDbModel>, List<Room>>(pagedRooms);
+        }
+
+        public async Task<int> CountAsync()
+        {
+            return await _context.Rooms.CountAsync();
+        }
+
         public async Task AddAsync(Room room)
         {
             var mappedRoom = _mapper.Map<Room, RoomDbModel>(room);
@@ -57,7 +74,7 @@ namespace roomvision.infrastructure.Repositories
             _context.Rooms.Update(mappedRoom);
             await _context.SaveChangesAsync();
         }
-        
+
         public async Task DeleteAsync(Room room)
         {
             var mappedRoom = _mapper.Map<Room, RoomDbModel>(room);

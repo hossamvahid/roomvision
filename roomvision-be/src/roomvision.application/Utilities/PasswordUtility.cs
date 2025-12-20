@@ -13,7 +13,7 @@ namespace roomvision.application.Utilities
     /// <remarks>
     /// This class provides methods for password generation and other related utilities.
     /// </remarks>
-    public static class PasswordUtility
+    internal static class PasswordUtility
     {
         /// <summary>
         /// Generates a strong random password.
@@ -56,7 +56,7 @@ namespace roomvision.application.Utilities
             var index = RandomNumberGenerator.GetInt32(possibleChars.Length);
             return possibleChars[index];
         }
-        
+
         /// <summary>
         /// Shuffles the characters in the input string randomly.
         /// </summary>
@@ -74,7 +74,7 @@ namespace roomvision.application.Utilities
             }
             return new string(array);
         }
-        
+
 
     }
 }

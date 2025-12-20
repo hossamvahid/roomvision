@@ -10,6 +10,8 @@ namespace roomvision.domain.Interfaces.Repositories
     {
         public Task<Room?> GetByIdAsync(int id);
         public Task<Room?> GetByRoomNameAsync(string roomName);
+        public Task<IReadOnlyList<Room>> GetPagedAsync(int page, int pageSize);
+        public Task<int> CountAsync();
         public Task AddAsync(Room room);
         public Task UpdateAsync(Room room);
         public Task DeleteAsync(Room room);

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using roomvision.domain.Common;
 using roomvision.application.Interfaces.Servicies;
 using roomvision.presentation.Request;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace roomvision.presentation.Controllers
 {
@@ -54,6 +56,18 @@ namespace roomvision.presentation.Controllers
             return Ok(new { Token = result.Value });
         }
         
+        [HttpGet("role")]
+        [Authorize]
+        public IActionResult GetUserRole()
+        {
+            var roleClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+            if (roleClaim == null)
+            {
+                return Unauthorized(new { Error = "Role claim not found." });
+            }
+
+            return Ok(new { Role = roleClaim.Value });
+        }
 
     }
 }
