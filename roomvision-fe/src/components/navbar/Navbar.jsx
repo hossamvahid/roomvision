@@ -1,23 +1,32 @@
-import {
-  Box,
-  Typography,
-  Button,
-} from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { LogOut } from "lucide-react";
 import { NavigationMenu } from ".";
-import { removeToken } from "../../utils/storage";
-
+import { getToken, removeToken } from "../../utils/storage";
+import { useEffect } from "react";
+import { getRole } from "../../services";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const theme = useTheme();
-
+  const navigate = useNavigate();
   const handleLogout = () => {
+    navigate("/login");
     removeToken();
   };
 
-
-
+  useEffect(() => {
+    const fetchRole = async () => {
+      try {
+        const role = await getRole();
+        console.log(role);
+      } catch (error) {
+        removeToken();
+        console.error(error.message);
+      }
+    };
+    fetchRole();
+  });
 
   return (
     <Box

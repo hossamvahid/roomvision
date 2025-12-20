@@ -13,7 +13,9 @@ export default function LoginBox() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+
     if (!email || !password) {
       setError("Please fill in all fields");
       return;
@@ -70,101 +72,103 @@ export default function LoginBox() {
           </Typography>
         )}
 
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 2,
-            borderBottom: "2px solid rgba(255,255,255,0.3)",
-            pb: 1,
-          }}
-        >
-          <User
-            size={28}
-            color={theme.palette.text.secondary}
-            strokeWidth={2}
-          />
-          <TextField
-            placeholder="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            variant="standard"
-            fullWidth
-            InputProps={{
-              disableUnderline: true,
-            }}
+        <form onSubmit={handleLogin} style={{ display: "contents" }}>
+          <Box
             sx={{
-              "& .MuiInput-input::placeholder": {
-                color: "rgba(255,255,255,0.7)",
-                opacity: 1,
-              },
-              "& .MuiInput-input": {
-                color: theme.palette.text.secondary,
-                fontSize: "1.1rem",
-              },
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              borderBottom: "2px solid rgba(255,255,255,0.3)",
+              pb: 1,
             }}
-          />
-        </Box>
+          >
+            <User
+              size={28}
+              color={theme.palette.text.secondary}
+              strokeWidth={2}
+            />
+            <TextField
+              placeholder="Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              variant="standard"
+              fullWidth
+              InputProps={{
+                disableUnderline: true,
+              }}
+              sx={{
+                "& .MuiInput-input::placeholder": {
+                  color: "rgba(255,255,255,0.7)",
+                  opacity: 1,
+                },
+                "& .MuiInput-input": {
+                  color: theme.palette.text.secondary,
+                  fontSize: "1.1rem",
+                },
+              }}
+            />
+          </Box>
 
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 2,
-            borderBottom: "2px solid rgba(255,255,255,0.3)",
-            pb: 1,
-          }}
-        >
-          <Lock
-            size={28}
-            color={theme.palette.text.secondary}
-            strokeWidth={2}
-          />
-          <TextField
-            placeholder="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            variant="standard"
-            fullWidth
-            InputProps={{
-              disableUnderline: true,
-            }}
+          <Box
             sx={{
-              "& .MuiInput-input::placeholder": {
-                color: "rgba(255,255,255,0.7)",
-                opacity: 1,
-              },
-              "& .MuiInput-input": {
-                color: theme.palette.text.secondary,
-                fontSize: "1.1rem",
-              },
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              borderBottom: "2px solid rgba(255,255,255,0.3)",
+              pb: 1,
             }}
-          />
-        </Box>
+          >
+            <Lock
+              size={28}
+              color={theme.palette.text.secondary}
+              strokeWidth={2}
+            />
+            <TextField
+              placeholder="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              variant="standard"
+              fullWidth
+              InputProps={{
+                disableUnderline: true,
+              }}
+              sx={{
+                "& .MuiInput-input::placeholder": {
+                  color: "rgba(255,255,255,0.7)",
+                  opacity: 1,
+                },
+                "& .MuiInput-input": {
+                  color: theme.palette.text.secondary,
+                  fontSize: "1.1rem",
+                },
+              }}
+            />
+          </Box>
 
-        <Button
-          onClick={handleLogin}
-          disabled={loading}
-          variant="contained"
-          sx={{
-            bgcolor: theme.palette.text.secondary,
-            color: theme.palette.primary.main,
-            fontWeight: 700,
-            fontSize: "1.1rem",
-            borderRadius: "50px",
-            py: 1.8,
-            mt: 2,
-            "&:hover": {
-              bgcolor: "rgba(255,255,255,0.9)",
-            },
-            opacity: loading ? 0.7 : 1,
-            cursor: loading ? "not-allowed" : "pointer",
-          }}
-        >
-          {loading ? "LOGGING IN..." : "LOGIN"}
-        </Button>
+          <Button
+            type="submit"
+            disabled={loading}
+            variant="contained"
+            sx={{
+              bgcolor: theme.palette.text.secondary,
+              color: theme.palette.primary.main,
+              fontWeight: 700,
+              fontSize: "1.1rem",
+              borderRadius: "50px",
+              py: 1.8,
+              mt: 2,
+              "&:hover": {
+                bgcolor: "rgba(255,255,255,0.9)",
+              },
+              opacity: loading ? 0.7 : 1,
+              cursor: loading ? "not-allowed" : "pointer",
+            }}
+          >
+            {loading ? "LOGGING IN..." : "LOGIN"}
+          </Button>
+        </form>
       </Box>
     </>
   );
