@@ -33,15 +33,6 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}/roomvision-be:latest
 
-      - name: Build & Push Frontend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./roomvision-fe
-          file: ./roomvision-fe/Dockerfile
-          push: true
-          tags: |
-            ghcr.io/${{ github.repository }}/roomvision-fe:latest
-
       - name: Build & Push FaceRecognition
         uses: docker/build-push-action@v5
         with:
