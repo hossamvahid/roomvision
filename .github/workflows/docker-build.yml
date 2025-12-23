@@ -2,9 +2,9 @@ name: Docker Build CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
@@ -12,42 +12,54 @@ jobs:
     permissions:
       contents: read
       packages: write
-      
+
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v2
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+     
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
-    - name: Build the Docker image for Backend
-      id: docker_build_backend
-      env:
-        IMAGE_NAME: ghcr.io/${{ github.repository }}/roomvision-be
-      run: |
-        docker build ./roomvision-be/src --file ./roomvision-be/src/Dockerfile --tag $IMAGE_NAME:latest
-        docker push $IMAGE_NAME:latest
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build the Docker image for Frontend
-      id: docker_build_frontend
-      env:
-        IMAGE_NAME: ghcr.io/${{ github.repository }}/roomvision-fe
-      run: |
-        docker build ./roomvision-fe/ --file ./roomvision-fe/Dockerfile --tag $IMAGE_NAME:latest
-        docker push $IMAGE_NAME:latest
-
-    
-    - name: Build the Docker image for FaceRecognition
-      id: docker_build_facerecognition
-      env:
-        IMAGE_NAME: ghcr.io/${{ github.repository }}/roomvision-facerecognition
-      run: |
-        docker build ./roomvision-scripts/ --file ./roomvision-scripts/Dockerfile --tag $IMAGE_NAME:latest
-        docker push $IMAGE_NAME:latest
+     
+      - name: Build & Push Backend (multi-arch)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./roomvision-be/src
+          file: ./roomvision-be/src/Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ghcr.io/${{ github.repository }}/roomvision-be:latest
 
     
+      - name: Build & Push Frontend (multi-arch)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./roomvision-fe
+          file: ./roomvision-fe/Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ghcr.io/${{ github.repository }}/roomvision-fe:latest
 
+    
+      - name: Build & Push FaceRecognition (multi-arch)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./roomvision-scripts
+          file: ./roomvision-scripts/Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ghcr.io/${{ github.repository }}/roomvision-facerecognition:latest
