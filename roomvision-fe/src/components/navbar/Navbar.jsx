@@ -26,7 +26,7 @@ export default function Navbar() {
       }
     };
     fetchRole();
-  });
+  }, []);
 
   return (
     <Box

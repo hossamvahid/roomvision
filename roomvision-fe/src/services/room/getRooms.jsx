@@ -2,7 +2,6 @@ import api from "../api";
 import getToken from "../../utils/storage/getToken";
 export default async function getRooms(page, pageSize = 6) {
   try {
-    console.log(page);
     const token = getToken();
 
     const response = await api.get(

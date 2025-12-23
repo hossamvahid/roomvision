@@ -11,17 +11,16 @@ import { Users, Calendar } from "lucide-react";
 import { useState, useEffect } from "react";
 import { handleNextPage, handlePreviousPage } from "../../utils/pagination";
 import { formatDate } from "../../utils/date";
-import { useNavigate } from "react-router-dom";
 
-export default function RoomsGrid({
-  rooms,
+export default function PersonsGrid({
+  faces,
   currentPage,
   totalPages,
   loading,
   setCurrentPage,
 }) {
   const theme = useTheme();
-  const navigate = useNavigate();
+
   return (
     <>
       {loading ? (
@@ -40,62 +39,33 @@ export default function RoomsGrid({
               gap: 3,
             }}
           >
-            {rooms.map((room) => (
-              <Box key={room.roomName}>
+            {faces.map((face) => (
+              <Box key={face}>
                 <Paper
-                  onClick={() => navigate(`/room-info?room=${room.roomName}`)}
                   sx={{
-                    p: 3,
+                    p: 2,
+                    minHeight: 60,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
                     borderRadius: "8px",
                     boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-                    cursor: "pointer",
-                    transition: "box-shadow 0.3s ease",
-                    "&:hover": {
-                      boxShadow: "0 4px 16px rgba(0, 0, 0, 0.15)",
-                    },
+                    backgroundColor:
+                      face === "Unknown" ? theme.palette.error.main : "white",
                   }}
                 >
                   <Typography
                     variant="h5"
                     sx={{
                       fontWeight: 600,
-                      color: theme.palette.secondary.main,
-                      mb: 2,
+                      color:
+                        face === "Unknown"
+                          ? "white"
+                          : theme.palette.secondary.main,
                     }}
                   >
-                    {room.roomName}
+                    {face}
                   </Typography>
-
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                      mb: 1.5,
-                    }}
-                  >
-                    <Users size={24} color={theme.palette.secondary.main} />
-                    <Typography
-                      sx={{
-                        color: theme.palette.secondary.main,
-                        fontWeight: 500,
-                      }}
-                    >
-                      {room.totalFaces}
-                    </Typography>
-                  </Box>
-
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <Calendar size={24} color={theme.palette.secondary.main} />
-                    <Typography
-                      sx={{
-                        color: theme.palette.secondary.main,
-                        fontWeight: 500,
-                      }}
-                    >
-                      {formatDate(room.scannedAt)}
-                    </Typography>
-                  </Box>
                 </Paper>
               </Box>
             ))}

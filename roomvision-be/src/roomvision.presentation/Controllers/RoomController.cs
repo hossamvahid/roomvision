@@ -53,7 +53,7 @@ namespace roomvision.presentation.Controllers
         }
 
         [HttpGet("scan/result")]
-        [Authorize(Roles = "Room")]
+        [Authorize(Roles = "Account")]
         public async Task<IActionResult> GetScanResult([FromQuery] string room)
         {
             if (string.IsNullOrEmpty(room))
@@ -77,6 +77,8 @@ namespace roomvision.presentation.Controllers
             var mappedResult = new ScanResult
             {
                 IdentifiedFaces = result.Value!.IdentifiedFaces,
+                TotalFaces = result.Value.TotalFaces,
+                TotalUnknown = result.Value.IdentifiedFaces!.Count(f => f == "Unknown"),
                 ScannedAt = result.Value.ScannedAt
             };
 

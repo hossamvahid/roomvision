@@ -27,41 +27,6 @@ export default function Title() {
         >
           Rooms
         </Typography>
-
-        <TextField
-          placeholder="search"
-          variant="outlined"
-          size="small"
-          sx={{
-            width: 250,
-            "& .MuiOutlinedInput-root": {
-              borderRadius: "25px",
-              backgroundColor: theme.palette.secondary.main,
-              color: "white",
-              "& fieldset": {
-                borderColor: theme.palette.secondary.main,
-              },
-              "&:hover fieldset": {
-                borderColor: theme.palette.secondary.main,
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: theme.palette.secondary.main,
-              },
-            },
-            "& .MuiOutlinedInput-input": {
-              color: "white",
-              "&::placeholder": {
-                color: "rgba(255, 255, 255, 0.7)",
-                opacity: 1,
-              },
-            },
-          }}
-          InputProps={{
-            endAdornment: (
-              <Search size={20} style={{ color: "white", marginRight: 8 }} />
-            ),
-          }}
-        />
       </Box>
     </>
   );
