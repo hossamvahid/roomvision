@@ -32,24 +32,24 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
      
-      - name: Build & Push Backend (multi-arch)
+      - name: Build & Push Backend
         uses: docker/build-push-action@v5
         with:
           context: ./roomvision-be/src
           file: ./roomvision-be/src/Dockerfile
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           tags: |
             ghcr.io/${{ github.repository }}/roomvision-be:latest
 
     
-      - name: Build & Push Frontend (multi-arch)
+      - name: Build & Push Frontend
         uses: docker/build-push-action@v5
         with:
           context: ./roomvision-fe
           file: ./roomvision-fe/Dockerfile
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           tags: |
             ghcr.io/${{ github.repository }}/roomvision-fe:latest
 
