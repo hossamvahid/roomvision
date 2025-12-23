@@ -40,3 +40,14 @@ jobs:
         docker build ./roomvision-fe/ --file ./roomvision-fe/Dockerfile --tag $IMAGE_NAME:latest
         docker push $IMAGE_NAME:latest
 
+    
+    - name: Build the Docker image for FaceRecognition
+      id: docker_build_facerecognition
+      env:
+        IMAGE_NAME: ghcr.io/${{ github.repository }}/roomvision-facerecognition
+      run: |
+        docker build ./roomvision-scripts/ --file ./roomvision-scripts/Dockerfile --tag $IMAGE_NAME:latest
+        docker push $IMAGE_NAME:latest
+
+    
+
