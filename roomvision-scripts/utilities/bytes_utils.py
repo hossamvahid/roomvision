@@ -1,8 +1,8 @@
-from PIL import Image
-import io
+import cv2
 import numpy as np
 
-def bytes_to_numpy(image_bytes):
-    """Convert image bytes to numpy array in RGB format"""
-    pil_image = Image.open(io.BytesIO(image_bytes))
-    return np.array(pil_image.convert('RGB'))
+def bytes_to_image(image_bytes):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    image_bgr = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+    return image_bgr

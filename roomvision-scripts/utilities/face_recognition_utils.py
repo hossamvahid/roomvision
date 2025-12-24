@@ -1,6 +1,10 @@
 import face_recognition
 from logs.logging_config import get_logger
 import numpy as np
+import cv2
+from mtcnn import MTCNN
+
+detector = MTCNN()
 
 def embed_face(image, known_face_locations=None):
     """Encode a face from a numpy image array."""
@@ -12,8 +16,18 @@ def embed_face(image, known_face_locations=None):
     return encodings[0]
 
 def detect_faces(image):
-    """Detect faces in a numpy image array."""
-    face_locations = face_recognition.face_locations(image, model="hog")
+    """Detect faces from an image."""
+    result = detector.detect_faces(image)
+
+    face_locations = []
+    for face in result:
+        x, y, width, height = face['box']
+        top = y
+        right = x + width
+        bottom = y + height
+        left = x
+        face_locations.append((top, right, bottom, left))
+
     return face_locations
 
 

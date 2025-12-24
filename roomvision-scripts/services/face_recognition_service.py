@@ -51,10 +51,10 @@ class FaceRecognitionService(face_recognition_pb2_grpc.FaceRecognitionServicer):
         image_bytes = request.image
 
         logger.info("Converting bytes to numpy array for face recognition")
-        image = bytes_utils.bytes_to_numpy(image_bytes)
+        image = bytes_utils.bytes_to_image(image_bytes=image_bytes)
 
         logger.info("Detecting faces in the image")
-        face_locations = detect_faces(image)
+        face_locations = detect_faces(image=image)
 
         if len(face_locations) == 0:
             logger.warning("No faces detected in the room")
