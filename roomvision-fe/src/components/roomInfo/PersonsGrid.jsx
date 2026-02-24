@@ -1,24 +1,9 @@
-import {
-  Box,
-  Typography,
-  Button,
-  Grid,
-  Paper,
-  CircularProgress,
-} from "@mui/material";
+import { Box, Typography, Grid, Paper, CircularProgress } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { Users, Calendar } from "lucide-react";
-import { useState, useEffect } from "react";
-import { handleNextPage, handlePreviousPage } from "../../utils/pagination";
 import { formatDate } from "../../utils/date";
 
-export default function PersonsGrid({
-  faces,
-  currentPage,
-  totalPages,
-  loading,
-  setCurrentPage,
-}) {
+export default function PersonsGrid({ faces, loading }) {
   const theme = useTheme();
 
   return (
@@ -70,75 +55,6 @@ export default function PersonsGrid({
               </Box>
             ))}
           </Grid>
-
-          {totalPages > 1 && (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                gap: 2,
-              }}
-            >
-              <Button
-                onClick={() => handlePreviousPage({ setCurrentPage })}
-                disabled={currentPage === 1}
-                sx={{
-                  backgroundColor: theme.palette.secondary.main,
-                  color: "white",
-                  borderRadius: "20px",
-                  px: 3,
-                  textTransform: "none",
-                  fontSize: "16px",
-                  fontWeight: 500,
-                  "&:hover": {
-                    backgroundColor: theme.palette.primary.main,
-                  },
-                  "&:disabled": {
-                    backgroundColor: "#ccc",
-                    color: "#999",
-                  },
-                }}
-              >
-                Back
-              </Button>
-
-              <Typography
-                sx={{
-                  fontWeight: 600,
-                  fontSize: "18px",
-                  color: theme.palette.secondary.main,
-                }}
-              >
-                {currentPage}/{totalPages}
-              </Typography>
-
-              <Button
-                onClick={() =>
-                  handleNextPage({ currentPage, totalPages, setCurrentPage })
-                }
-                disabled={currentPage === totalPages}
-                sx={{
-                  backgroundColor: theme.palette.secondary.main,
-                  color: "white",
-                  borderRadius: "20px",
-                  px: 3,
-                  textTransform: "none",
-                  fontSize: "16px",
-                  fontWeight: 500,
-                  "&:hover": {
-                    backgroundColor: theme.palette.primary.main,
-                  },
-                  "&:disabled": {
-                    backgroundColor: "#ccc",
-                    color: "#999",
-                  },
-                }}
-              >
-                Next
-              </Button>
-            </Box>
-          )}
         </>
       )}
     </>

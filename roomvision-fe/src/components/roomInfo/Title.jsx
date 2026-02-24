@@ -1,15 +1,12 @@
 import { Box, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import Information from "./Information";
-import SearchBar from "./SearchBar";
 
 export default function Title({
   roomName,
   totalFaces,
   totalUnknown,
   scannedAt,
-  searchTerm = "",
-  setSearchTerm,
 }) {
   const theme = useTheme();
 
@@ -43,8 +40,6 @@ export default function Title({
           scannedAt={scannedAt}
         />
       </Box>
-
-      <SearchBar value={searchTerm} onChange={setSearchTerm} />
     </Box>
   );
 }

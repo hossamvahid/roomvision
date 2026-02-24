@@ -16,7 +16,7 @@ namespace roomvision.infrastructure.Repositories
     {
         private readonly IGenericMapper _mapper;
         private readonly PgSqlContext _context;
-        
+
         public AccountRepository(IGenericMapper mapper, PgSqlContext context)
         {
             _mapper = mapper;
@@ -45,10 +45,21 @@ namespace roomvision.infrastructure.Repositories
             return _mapper.Map<AccountDbModel, Account>(account);
         }
 
+        public async Task<IReadOnlyList<Account>> GetAccountsPaginatedAsync(int page, int pageSize)
+        {
+            var accounts = await _context.Accounts.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            return _mapper.Map<List<AccountDbModel>, List<Account>>(accounts);
+        }
+
+        public async Task<int> CountAsync()
+        {
+            return await _context.Accounts.CountAsync();
+        }
+
         public async Task AddAsync(Account account)
         {
             var mappedAccountToAdd = _mapper.Map<Account, AccountDbModel>(account);
-            await  _context.AddAsync(mappedAccountToAdd);
+            await _context.AddAsync(mappedAccountToAdd);
             await _context.SaveChangesAsync();
         }
 
@@ -56,9 +67,9 @@ namespace roomvision.infrastructure.Repositories
         {
             var mappedAccountToUpdate = _mapper.Map<Account, AccountDbModel>(account);
             _context.Update(mappedAccountToUpdate);
-            await _context.SaveChangesAsync();            
+            await _context.SaveChangesAsync();
         }
-        
+
         public async Task DeleteByIdAsync(Account account)
         {
             var accountToDelete = _mapper.Map<Account, AccountDbModel>(account);

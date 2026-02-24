@@ -19,9 +19,9 @@ class FaceRecognitionService(face_recognition_pb2_grpc.FaceRecognitionServicer):
         person_name = request.person_name
 
         logger.info("Converting bytes to numpy array for face recognition")
-        image = bytes_utils.bytes_to_numpy(image_bytes)
+        image = bytes_utils.bytes_to_image(image_bytes)
 
-        logger.info("Encoding face")
+        logger.info("Embedding face")
         embedding = embed_face(image)
 
         if embedding is None:
@@ -66,7 +66,7 @@ class FaceRecognitionService(face_recognition_pb2_grpc.FaceRecognitionServicer):
             image=image,
             unknown_faces_location=face_locations,
             vector_store=self.vector_store,
-            tolerance=0.6
+            tolerance=0.5
         )
         
         return face_recognition_pb2.PersonsInRoom(persons=matched_persons,total=len(matched_persons))

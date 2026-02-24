@@ -10,6 +10,8 @@ namespace roomvision.domain.Interfaces.Repositories
     {
         public Task<Account?> GetByIdAsync(int id);
         public Task<Account?> GetByEmailAsync(string email);
+        public Task<IReadOnlyList<Account>> GetAccountsPaginatedAsync(int page, int pageSize);
+        public Task<int> CountAsync();
         public Task AddAsync(Account account);
         public Task UpdateAsync(Account account);
         public Task DeleteByIdAsync(Account account);

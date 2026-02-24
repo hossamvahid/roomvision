@@ -4,6 +4,7 @@ using roomvision.application.Interfaces.Servicies.RoomServices;
 using roomvision.application.Models;
 using roomvision.application.Projections;
 using roomvision.domain.Common;
+using roomvision.domain.Entities;
 using roomvision.domain.Interfaces.Repositories;
 
 namespace roomvision.application.Servicies.RoomServices;
@@ -11,10 +12,10 @@ namespace roomvision.application.Servicies.RoomServices;
 public class GetRooms : IGetRooms
 {
     private readonly IRoomRepository _roomRepository;
-    private readonly RoomWithScanProjection _projection;
+    private readonly IProjection<Room, RoomWithScan> _projection;
     private readonly ILog _log;
 
-    public GetRooms(IRoomRepository roomRepository, RoomWithScanProjection projection, ILog log)
+    public GetRooms(IRoomRepository roomRepository, IProjection<Room, RoomWithScan> projection, ILog log)
     {
         _roomRepository = roomRepository;
         _projection = projection;

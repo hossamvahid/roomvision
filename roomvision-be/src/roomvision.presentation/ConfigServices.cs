@@ -7,11 +7,13 @@ using roomvision.application.Interfaces.Servicies;
 using roomvision.application.Interfaces.Servicies.AccountServices;
 using roomvision.application.Interfaces.Servicies.PersonServices;
 using roomvision.application.Interfaces.Servicies.RoomServices;
+using roomvision.application.Models;
 using roomvision.application.Projections;
 using roomvision.application.Servicies;
 using roomvision.application.Servicies.AccountServices;
 using roomvision.application.Servicies.PersonServices;
 using roomvision.application.Servicies.RoomServices;
+using roomvision.domain.Entities;
 using roomvision.domain.Interfaces.FaceRecognition;
 using roomvision.domain.Interfaces.Generators;
 using roomvision.domain.Interfaces.Mappers;
@@ -82,7 +84,7 @@ namespace roomvision.presentation
             });
             services.AddScoped<IFaceRecognition, GrpcFaceRecognition>();
 
-            //Repositories`
+            //Repositories
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<IRoomRepository, RoomRepository>();
             services.AddScoped<IPersonRepository, PersonRepository>();
@@ -96,12 +98,15 @@ namespace roomvision.presentation
             services.AddScoped<IScanRoomService, ScanRoomService>();
             services.AddScoped<IScanResultService, ScanResultService>();
             services.AddScoped<IGetRooms, GetRooms>();
+            services.AddScoped<IGetAccountNameService, GetAccountNameService>();
+            services.AddScoped<IGetAccountsService, GetAccountsService>();
 
             //Log
             services.AddSingleton(LogManager.GetLogger("SERVER"));
 
             //Projections
-            services.AddScoped<RoomWithScanProjection>();
+            services.AddScoped<IProjection<Room, RoomWithScan>, RoomWithScanProjection>();
+            services.AddScoped<IProjection<Account, AccountDetails>, AccountDetailsProjection>();
 
         }
     }

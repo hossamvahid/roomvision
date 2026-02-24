@@ -19,13 +19,19 @@ namespace roomvision.presentation.Controllers
     {
         private readonly ICreateAccountService _createAccountService;
         private readonly IResetAccountPasswordService _resetAccountPasswordService;
+        private readonly IGetAccountNameService _getAccountNameService;
+        private readonly IGetAccountsService _getAccountsService;
 
         public AccountController(
             ICreateAccountService createAccountService,
-            IResetAccountPasswordService resetAccountPasswordService)
+            IResetAccountPasswordService resetAccountPasswordService,
+            IGetAccountNameService getAccountNameService,
+            IGetAccountsService getAccountsService)
         {
             _createAccountService = createAccountService;
             _resetAccountPasswordService = resetAccountPasswordService;
+            _getAccountNameService = getAccountNameService;
+            _getAccountsService = getAccountsService;
         }
 
         [HttpPost("create")]
@@ -69,7 +75,36 @@ namespace roomvision.presentation.Controllers
 
             return Ok();
         }
-        
-        
+
+        [HttpGet("get-account-name")]
+        [Authorize(Roles = "Account")]
+        public async Task<IActionResult> GetAccountName()
+        {
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
+
+            var result = await _getAccountNameService.Execute(int.Parse(userId));
+
+            if (result.IsFailure)
+            {
+                return result.ErrorType switch
+                {
+                    ErrorTypes.NotFound => NotFound(new { Error = result.Error }),
+                    _ => StatusCode(500, new { Error = "An unexpected error occurred." })
+                };
+            }
+
+            return Ok(new { AccountName = result.Value });
+        }
+
+        [HttpGet("list")]
+        [Authorize(Roles = "Account")]
+        public async Task<IActionResult> GetAccounts([FromQuery] int page, [FromQuery] int pageSize = 6)
+        {
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
+            var result = await _getAccountsService.Execute(page, pageSize, int.Parse(userId));
+            return Ok(result.Value);
+        }
+
+
     }
 }

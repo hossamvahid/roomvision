@@ -5,7 +5,7 @@ using roomvision.domain.Interfaces.Repositories;
 
 namespace roomvision.application.Projections;
 
-public sealed class RoomWithScanProjection
+public sealed class RoomWithScanProjection : IProjection<Room, RoomWithScan>
 {
     private readonly IScannedRoomRepository _scannedRepository;
 
