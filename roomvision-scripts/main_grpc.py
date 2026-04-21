@@ -1,11 +1,12 @@
 import time
 import grpc
-from logs.logging_config import setup_logging, set_correlation_id;
+from logs.logging_config import setup_logging, set_correlation_id
 from concurrent import futures
-from interceptors.correlation_id_interceptor import CorrelationIdInterceptor
-from interceptors.end_request_interceptor import EndRequestInterceptor
-from protos import face_recognition_pb2_grpc
-from services.face_recognition_service import FaceRecognitionService
+from services.recognition_service import RecognitionService
+from transport.grpc.interceptors.correlation_id_interceptor import CorrelationIdInterceptor
+from transport.grpc.interceptors.end_request_interceptor import EndRequestInterceptor
+from transport.grpc.protos import face_recognition_pb2_grpc
+from transport.grpc.services.face_recognition_service import FaceRecognitionService
 from data_access.qdrant_repository import QdrantRepository
 from dotenv import load_dotenv
 import os
@@ -25,9 +26,13 @@ if __name__ == "__main__":
     )
 
     vector_store = QdrantRepository()
+    recognition_service = RecognitionService(vector_store=vector_store)
+    
     face_recognition_pb2_grpc.add_FaceRecognitionServicer_to_server(
-        FaceRecognitionService(vector_store), server
+        FaceRecognitionService(recognition_service=recognition_service), server
     )
+
+
 
 
     grpc_port = os.getenv("GRPC_PORT")

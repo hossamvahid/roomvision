@@ -1,4 +1,7 @@
-protos/*_pb2.py
-protos/*_pb2_grpc.py
-__pycache__/
-*.pyc
+venv/
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+.env
+.git
+logs/*.log
