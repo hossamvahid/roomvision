@@ -5,7 +5,7 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-import { Rooms, Login, RoomInfo } from "../pages";
+import { Rooms, Login, RoomInfo, Settings } from "../pages";
 import ProtectedRoute from "../routes/ProtectedRoute";
 import PublicRoute from "../routes/PublicRoute";
 import { Layout } from "../layouts";
@@ -36,6 +36,20 @@ function App() {
                 </Layout>
               }
             />
+
+            <Route
+              path="/settings"
+              element={
+                <Layout>
+                  {" "}
+                  <ProtectedRoute>
+                    {" "}
+                    <Settings />{" "}
+                  </ProtectedRoute>{" "}
+                </Layout>
+              }
+            />
+
             <Route
               path="/room-info"
               element={

@@ -76,7 +76,7 @@ namespace roomvision.presentation.Controllers
             return Ok();
         }
 
-        [HttpGet("get-account-name")]
+        [HttpGet("name")]
         [Authorize(Roles = "Account")]
         public async Task<IActionResult> GetAccountName()
         {
