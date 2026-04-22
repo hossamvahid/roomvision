@@ -9,6 +9,7 @@ from transport.grpc.protos import face_recognition_pb2_grpc
 from transport.grpc.services.face_recognition_service import FaceRecognitionService
 from data_access.qdrant_repository import QdrantRepository
 from dotenv import load_dotenv
+from utilities.face_recognition_utils import MTCNNRecognitionUtil
 import os
 
 logger = setup_logging();
@@ -26,8 +27,9 @@ if __name__ == "__main__":
     )
 
     vector_store = QdrantRepository()
-    recognition_service = RecognitionService(vector_store=vector_store)
-    
+    recognition_util = MTCNNRecognitionUtil(vector_store=vector_store)
+    recognition_service = RecognitionService(vector_store=vector_store, recognition_util=recognition_util)
+
     face_recognition_pb2_grpc.add_FaceRecognitionServicer_to_server(
         FaceRecognitionService(recognition_service=recognition_service), server
     )
