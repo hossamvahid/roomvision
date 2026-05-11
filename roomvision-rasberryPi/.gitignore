@@ -1,0 +1,10 @@
+# --- Python venv ---
+venv/
+.env/
+env/
+.venv/
+.env
+
+# --- Byte-compiled / cache ---
+__pycache__/
+*.py[cod]
