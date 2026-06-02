@@ -1,24 +1,11 @@
-import React from "react";
 import { Box } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 import { Navbar } from "../components/navbar";
 
 export default function Layout({ children }) {
-  const theme = useTheme();
-
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh" }}>
-
+    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", bgcolor: "oklch(0.135 0.006 248)" }}>
       <Navbar />
-
-      <Box
-        sx={{
-          marginLeft: "250px",
-          width: "calc(100% - 250px)",
-          bgcolor: theme.palette.background.default,
-          overflowY: "auto",
-        }}
-      >
+      <Box sx={{ flex: 1 }}>
         {children}
       </Box>
     </Box>
