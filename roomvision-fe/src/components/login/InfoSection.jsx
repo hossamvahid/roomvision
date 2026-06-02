@@ -1,49 +1,68 @@
-import { Box, Typography } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { Box } from "@mui/material";
 
-export default function InfoSection() {
-  const theme = useTheme();
+const ACCENT = "oklch(0.840 0.060 214)";
 
+export default function BrandLockup() {
   return (
-    <>
-      <Box>
-        <Typography
-          variant="h3"
+    <Box sx={{ display: "flex", alignItems: "center", gap: "12px" }}>
+      {/* Detection-frame logo mark */}
+      <Box
+        aria-hidden="true"
+        sx={{
+          position: "relative",
+          width: "30px",
+          height: "30px",
+          flexShrink: 0,
+        }}
+      >
+        {/* Corner brackets */}
+        {[
+          { top: 0, left: 0, borderRight: "none", borderBottom: "none" },
+          { top: 0, right: 0, borderLeft: "none", borderBottom: "none" },
+          { bottom: 0, left: 0, borderRight: "none", borderTop: "none" },
+          { bottom: 0, right: 0, borderLeft: "none", borderTop: "none" },
+        ].map((pos, i) => (
+          <Box
+            key={i}
+            sx={{
+              position: "absolute",
+              width: "9px",
+              height: "9px",
+              border: `1.5px solid ${ACCENT}`,
+              ...pos,
+            }}
+          />
+        ))}
+        {/* Center dot */}
+        <Box
           sx={{
-            fontWeight: 700,
-            mb: 3,
-            color: theme.palette.text.primary,
-            fontSize: "3rem",
+            position: "absolute",
+            inset: 0,
+            margin: "auto",
+            width: "7px",
+            height: "7px",
+            borderRadius: "50%",
+            background: ACCENT,
+            boxShadow: `0 0 10px ${ACCENT}`,
           }}
-        >
-          RoomVision
-        </Typography>
-        <Typography
-          variant="body1"
-          sx={{
-            color: theme.palette.text.primary,
-            lineHeight: 1.8,
-            mb: 2,
-            fontSize: "1.1rem",
-          }}
-        >
-          is an advanced system designed for full-room facial recognition,
-          capable of identifying and analyzing faces across an entire room in
-          real time. It provides accurate detection, tracking, and insights to
-          enhance security, access control, and smart environment management.
-        </Typography>
-        <Typography
-          variant="body2"
-          sx={{
-            color: theme.palette.text.primary,
-            fontWeight: 600,
-            fontSize: "1.05rem",
-          }}
-        >
-          Please enter your credentials in order to log in to the administrative
-          dashboard.
-        </Typography>
+        />
       </Box>
-    </>
+
+      {/* Wordmark */}
+      <Box
+        sx={{
+          fontFamily: '"Space Grotesk", sans-serif',
+          fontWeight: 600,
+          fontSize: "19px",
+          letterSpacing: "-0.01em",
+          color: "oklch(0.960 0.004 248)",
+        }}
+      >
+        Room
+        <Box component="span" sx={{ color: "oklch(0.700 0.008 248)", fontWeight: 400 }}>
+          Vision
+        </Box>
+      </Box>
+    </Box>
   );
 }

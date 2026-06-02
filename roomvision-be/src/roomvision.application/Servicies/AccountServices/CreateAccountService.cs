@@ -10,6 +10,7 @@ using roomvision.domain.Entities;
 using roomvision.domain.Interfaces.Generators;
 using roomvision.domain.Interfaces.Repositories;
 using roomvision.domain.Interfaces.Security;
+using roomvision.domain.Enums;
 
 namespace roomvision.application.Servicies.AccountServices
 {
@@ -32,7 +33,7 @@ namespace roomvision.application.Servicies.AccountServices
             _passwordHasher = passwordHasher;
         }
 
-        public async Task<Result> Execute(string email, string name)
+        public async Task<Result> Execute(string email, string name, Role role)
         {
             _log.Info($"Creating account for email: {email}, name: {name}");
             var account = await _accountRepository.GetByEmailAsync(email);
@@ -50,13 +51,14 @@ namespace roomvision.application.Servicies.AccountServices
             {
                 Email = email,
                 Name = name,
-                Password = _passwordHasher.GenerateHashedPassword(password)
+                Password = _passwordHasher.GenerateHashedPassword(password),
+                Role = role
             };
-            
+
             _log.Info("Saving account and sending welcome email.");
             await _accountRepository.AddAsync(newAccount);
             await _mailGenerator.WelcomeEmailAsync(email, password);
-            
+
             _log.Info("Account created successfully.");
             return Result.Success();
         }

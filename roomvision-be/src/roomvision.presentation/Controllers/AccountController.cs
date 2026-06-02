@@ -38,7 +38,7 @@ namespace roomvision.presentation.Controllers
         [Authorize(Roles = "Account")]
         public async Task<IActionResult> CreateAccount([FromBody] CreateAccount request)
         {
-            var result = await _createAccountService.Execute(request.Email!, request.Name!);
+            var result = await _createAccountService.Execute(request.Email!, request.Name!, request.Role);
 
             if (result.IsFailure)
             {

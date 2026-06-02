@@ -7,6 +7,7 @@ using roomvision.domain.Interfaces.Generators;
 using roomvision.domain.Interfaces.Repositories;
 using Xunit;
 using roomvision.domain.Interfaces.Security;
+using roomvision.domain.Enums;
 
 namespace roomvision.unit.ServiceUnitTests.AccountTests
 {
@@ -52,7 +53,7 @@ namespace roomvision.unit.ServiceUnitTests.AccountTests
                 .Returns(Task.CompletedTask);
 
 
-            var result = await _createAccountService.Execute(email, name);
+            var result = await _createAccountService.Execute(email, name, Role.Admin);
 
             Assert.True(result.IsSuccess);
         }
@@ -74,7 +75,7 @@ namespace roomvision.unit.ServiceUnitTests.AccountTests
             _mockAccountRepository.Setup(r => r.GetByEmailAsync(email))
                 .ReturnsAsync(existingAccount);
 
-            var result = await _createAccountService.Execute(email, name);
+            var result = await _createAccountService.Execute(email, name, Role.Admin);
 
             Assert.False(result.IsSuccess);
             Assert.Equal(ErrorTypes.Conflict, result.ErrorType);
