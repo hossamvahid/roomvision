@@ -19,6 +19,7 @@ namespace roomvision.infrastructure.Generators
             {
                 new Claim(JwtRegisteredClaimNames.Sub, account.Id.ToString()),
                 new Claim(ClaimTypes.Role, "Account"),
+                new Claim(ClaimTypes.Role, account.Role.ToString()),
             };
 
             RSA privateKey = RSA.Create();

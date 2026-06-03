@@ -6,14 +6,15 @@ import { getRole } from "../../services";
 import getAccountName from "../../services/account/getAccountName";
 import getAccounts from "../../services/account/getAccounts";
 import createAccount from "../../services/account/createAccount";
+import deleteAccount from "../../services/account/deleteAccount";
 import resetPassword from "../../services/account/resetPassword";
 
-const ACCENT     = "oklch(0.840 0.060 214)";
-const ACCENT_DIM = "oklch(0.840 0.060 214 / 0.16)";
-const monoFont   = '"JetBrains Mono", ui-monospace, monospace';
+const ACCENT      = "oklch(0.840 0.060 214)";
+const ACCENT_DIM  = "oklch(0.840 0.060 214 / 0.16)";
+const monoFont    = '"JetBrains Mono", ui-monospace, monospace';
 const displayFont = '"Space Grotesk", sans-serif';
 
-/* ── small shared primitives ── */
+/* ── shared primitives ── */
 function FieldLabel({ children }) {
   return (
     <Box component="label" sx={{ fontFamily: monoFont, fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase", color: "oklch(0.530 0.009 248)", display: "block", mb: "7px" }}>
@@ -58,6 +59,20 @@ function BtnGhost({ onClick, children }) {
   );
 }
 
+/* ── Role segmented control ── */
+function RoleSegment({ value, onChange }) {
+  return (
+    <Box sx={{ display: "flex", background: "oklch(0.195 0.007 248)", border: "1px solid oklch(0.305 0.010 248)", borderRadius: "9px", padding: "3px", gap: "2px" }}>
+      {["Admin", "Viewer"].map((role) => (
+        <Box key={role} component="button" type="button" onClick={() => onChange(role)}
+          sx={{ flex: 1, background: value === role ? "oklch(0.225 0.008 248)" : "none", border: "none", borderRadius: "6px", padding: "8px 12px", fontFamily: monoFont, fontSize: "11px", letterSpacing: "0.06em", textTransform: "uppercase", color: value === role ? "oklch(0.960 0.004 248)" : "oklch(0.530 0.009 248)", cursor: "pointer", transition: "all .15s ease", "&:hover": { color: value === role ? "oklch(0.960 0.004 248)" : "oklch(0.700 0.008 248)" } }}>
+          {role}
+        </Box>
+      ))}
+    </Box>
+  );
+}
+
 /* ── Modal shell ── */
 function Modal({ open, onClose, title, subtitle, wide, children }) {
   useEffect(() => {
@@ -71,7 +86,6 @@ function Modal({ open, onClose, title, subtitle, wide, children }) {
   return (
     <Box onClick={onClose} sx={{ position: "fixed", inset: 0, zIndex: 200, background: "oklch(0.1 0.006 248 / 0.66)", backdropFilter: "blur(3px)", display: "grid", placeItems: "center", padding: "24px" }}>
       <Box onClick={(e) => e.stopPropagation()} sx={{ width: "100%", maxWidth: wide ? "540px" : "460px", background: "oklch(0.195 0.007 248)", border: "1px solid oklch(0.395 0.012 248)", borderRadius: "16px", boxShadow: "0 30px 70px oklch(0 0 0 / 0.55)", maxHeight: "calc(100vh - 48px)", overflowY: "auto" }}>
-        {/* head */}
         <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "16px", padding: "22px 24px 0" }}>
           <Box>
             <Box sx={{ fontFamily: displayFont, fontSize: "19px", fontWeight: 600, letterSpacing: "-0.01em", color: "oklch(0.960 0.004 248)" }}>{title}</Box>
@@ -129,6 +143,7 @@ function AdminsModal({ open, onClose }) {
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [role, setRole] = useState("Viewer");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -141,16 +156,26 @@ function AdminsModal({ open, onClose }) {
       .finally(() => setLoading(false));
   }, [open]);
 
-  const handleClose = () => { setName(""); setEmail(""); setError(""); onClose(); };
+  const handleClose = () => { setName(""); setEmail(""); setRole("Viewer"); setError(""); onClose(); };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteAccount(id);
+      const data = await getAccounts(1, 50);
+      setAccounts(data?.items ?? data ?? []);
+    } catch (err) {
+      setError(typeof err === "string" ? err : "Failed to delete account.");
+    }
+  };
 
   const handleAdd = async () => {
     if (!name || !email) { setError("Name and email are required."); return; }
     setSubmitting(true); setError("");
     try {
-      await createAccount(email, name);
+      await createAccount(email, name, role);
       const data = await getAccounts(1, 50);
       setAccounts(data?.items ?? data ?? []);
-      setName(""); setEmail("");
+      setName(""); setEmail(""); setRole("Viewer");
     } catch (err) {
       setError(typeof err === "string" ? err : "Something went wrong.");
     } finally {
@@ -159,10 +184,10 @@ function AdminsModal({ open, onClose }) {
   };
 
   const initials = (n) => n ? n.split(" ").map((p) => p[0]).join("").slice(0, 2).toUpperCase() : "??";
+  const isAdmin  = (r) => r === "Admin" || r === 0;
 
   return (
     <Modal open={open} onClose={handleClose} title="Administrators" subtitle="Manage administrative accounts." wide>
-      {/* list */}
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: "24px" }}><CircularProgress size={20} sx={{ color: ACCENT }} /></Box>
       ) : (
@@ -176,17 +201,23 @@ function AdminsModal({ open, onClose }) {
                 <Box sx={{ fontFamily: displayFont, fontSize: "14px", fontWeight: 500, color: "oklch(0.960 0.004 248)" }}>{acc.name}</Box>
                 <Box sx={{ fontFamily: monoFont, fontSize: "11px", color: "oklch(0.530 0.009 248)", mt: "1px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{acc.email}</Box>
               </Box>
-              <Box sx={{ fontFamily: monoFont, fontSize: "9.5px", letterSpacing: "0.08em", textTransform: "uppercase", padding: "4px 8px", borderRadius: "100px", border: "1px solid oklch(0.395 0.012 248)", color: "oklch(0.700 0.008 248)", flexShrink: 0 }}>
-                {acc.role ?? "Admin"}
+              <Box sx={{ fontFamily: monoFont, fontSize: "9.5px", letterSpacing: "0.08em", textTransform: "uppercase", padding: "4px 8px", borderRadius: "100px", border: isAdmin(acc.role) ? `1px solid oklch(0.84 0.06 214 / 0.35)` : "1px solid oklch(0.395 0.012 248)", color: isAdmin(acc.role) ? ACCENT : "oklch(0.700 0.008 248)", flexShrink: 0 }}>
+                {isAdmin(acc.role) ? "Admin" : "Viewer"}
               </Box>
+              {!isAdmin(acc.role) && (
+                <Box component="button" onClick={() => handleDelete(acc.id)}
+                  sx={{ width: "30px", height: "30px", borderRadius: "7px", flexShrink: 0, background: "none", border: "1px solid transparent", color: "oklch(0.530 0.009 248)", cursor: "pointer", display: "grid", placeItems: "center", transition: "color .14s ease, border-color .14s ease", "&:hover": { color: "oklch(0.680 0.150 28)", borderColor: "oklch(0.680 0.150 28 / 0.4)" } }}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                </Box>
+              )}
             </Box>
           ))}
-          {accounts.length === 0 && <Box sx={{ fontFamily: monoFont, fontSize: "12px", color: "oklch(0.530 0.009 248)", textAlign: "center", py: "16px" }}>No administrators found.</Box>}
+          {accounts.length === 0 && <Box sx={{ fontFamily: monoFont, fontSize: "12px", color: "oklch(0.530 0.009 248)", textAlign: "center", py: "16px" }}>No accounts found.</Box>}
         </Box>
       )}
 
       {/* add form */}
-      <Box sx={{ fontFamily: monoFont, fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase", color: "oklch(0.530 0.009 248)", mb: "12px" }}>Add administrator</Box>
+      <Box sx={{ fontFamily: monoFont, fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase", color: "oklch(0.530 0.009 248)", mb: "12px" }}>Add account</Box>
       <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", mb: "12px" }}>
         <Box>
           <FieldLabel>Name</FieldLabel>
@@ -197,13 +228,17 @@ function AdminsModal({ open, onClose }) {
           <TextField type="email" placeholder="name@org.com" value={email} onChange={(e) => setEmail(e.target.value)} fullWidth sx={inputSx} />
         </Box>
       </Box>
+      <Box sx={{ mb: "14px" }}>
+        <FieldLabel>Role</FieldLabel>
+        <RoleSegment value={role} onChange={setRole} />
+      </Box>
       <Box sx={{ fontFamily: monoFont, fontSize: "11px", lineHeight: 1.5, color: "oklch(0.530 0.009 248)", mb: "14px" }}>
         A temporary password is generated automatically and emailed on creation.
       </Box>
       {error && <Typography sx={{ color: "#ff6b6b", fontFamily: monoFont, fontSize: "12px", mb: "12px" }}>{error}</Typography>}
       <Box sx={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
         <BtnGhost onClick={handleClose}>Cancel</BtnGhost>
-        <BtnPrimary onClick={handleAdd} disabled={submitting}>{submitting ? <CircularProgress size={14} color="inherit" /> : "Add administrator"}</BtnPrimary>
+        <BtnPrimary onClick={handleAdd} disabled={submitting}>{submitting ? <CircularProgress size={14} color="inherit" /> : "Add account"}</BtnPrimary>
       </Box>
     </Modal>
   );
@@ -213,30 +248,34 @@ function AdminsModal({ open, onClose }) {
    Main Navbar
 ══════════════════════════════════════════ */
 export default function Navbar() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const menuRef = useRef(null);
+  const navigate  = useNavigate();
+  const location  = useLocation();
+  const menuRef   = useRef(null);
 
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen,     setMenuOpen]     = useState(false);
   const [passwordOpen, setPasswordOpen] = useState(false);
-  const [adminsOpen, setAdminsOpen] = useState(false);
-  const [initials, setInitials] = useState("AD");
+  const [adminsOpen,   setAdminsOpen]   = useState(false);
+  const [initials,     setInitials]     = useState("AD");
+  const [isAdmin,      setIsAdmin]      = useState(false);
 
   /* fetch name for avatar initials */
   useEffect(() => {
     getAccountName()
-      .then((name) => {
-        if (name) {
-          const parts = name.trim().split(" ");
-          setInitials(parts.map((p) => p[0]).join("").slice(0, 2).toUpperCase());
-        }
+      .then((data) => {
+        const name = data?.accountName ?? data;
+        if (name) setInitials(name.trim().split(" ").map((p) => p[0]).join("").slice(0, 2).toUpperCase());
       })
       .catch(() => {});
   }, []);
 
-  /* validate token */
+  /* fetch role — redirect to login if token invalid, set isAdmin flag */
   useEffect(() => {
-    getRole().catch(() => { removeToken(); navigate("/login"); });
+    getRole()
+      .then((data) => {
+        const role = data?.role ?? data;
+        setIsAdmin(role === "Admin" || role === 0);
+      })
+      .catch(() => { removeToken(); navigate("/login"); });
   }, []);
 
   /* close menu on outside click */
@@ -247,8 +286,9 @@ export default function Navbar() {
   }, [menuOpen]);
 
   const handleLogout = () => { removeToken(); navigate("/login"); };
-
   const openModal = (modal) => { setMenuOpen(false); if (modal === "password") setPasswordOpen(true); if (modal === "admins") setAdminsOpen(true); };
+
+  const menuItemSx = { width: "100%", display: "flex", alignItems: "center", gap: "11px", background: "none", border: "none", cursor: "pointer", textAlign: "left", color: "oklch(0.700 0.008 248)", fontFamily: displayFont, fontSize: "13.5px", padding: "10px", borderRadius: "8px", transition: "background .14s ease, color .14s ease", "&:hover": { background: "oklch(0.225 0.008 248)", color: "oklch(0.960 0.004 248)" } };
 
   return (
     <>
@@ -275,29 +315,33 @@ export default function Navbar() {
           </Box>
         </Box>
 
-        {/* Right side — avatar + dropdown */}
+        {/* Right — avatar + dropdown */}
         <Box ref={menuRef} sx={{ marginLeft: "auto", position: "relative" }}>
           <Box component="button" onClick={() => setMenuOpen((v) => !v)}
             sx={{ width: "36px", height: "36px", borderRadius: "50%", background: "linear-gradient(135deg, oklch(0.225 0.008 248), oklch(0.195 0.007 248))", border: "1px solid oklch(0.395 0.012 248)", display: "grid", placeItems: "center", fontFamily: monoFont, fontSize: "12px", fontWeight: 600, color: "oklch(0.960 0.004 248)", cursor: "pointer" }}>
             {initials}
           </Box>
 
-          {/* Dropdown menu */}
           {menuOpen && (
             <Box sx={{ position: "absolute", top: "calc(100% + 10px)", right: 0, width: "220px", background: "oklch(0.195 0.007 248)", border: "1px solid oklch(0.395 0.012 248)", borderRadius: "12px", padding: "6px", boxShadow: "0 18px 48px oklch(0 0 0 / 0.5)", zIndex: 60 }}>
-              {[
-                { label: "Change password", icon: <path d="M4 11h16v9H4zM8 11V8a4 4 0 0 1 8 0v3"/>, action: () => openModal("password") },
-                { label: "Administrators",  icon: <><path d="M16 19v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1"/><circle cx="9" cy="7" r="3.2"/><path d="M19 8v5M21.5 10.5h-5"/></>, action: () => openModal("admins") },
-              ].map(({ label, icon, action }) => (
-                <Box key={label} component="button" onClick={action}
-                  sx={{ width: "100%", display: "flex", alignItems: "center", gap: "11px", background: "none", border: "none", cursor: "pointer", textAlign: "left", color: "oklch(0.700 0.008 248)", fontFamily: displayFont, fontSize: "13.5px", padding: "10px", borderRadius: "8px", transition: "background .14s ease, color .14s ease", "&:hover": { background: "oklch(0.225 0.008 248)", color: "oklch(0.960 0.004 248)" } }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">{icon}</svg>
-                  {label}
+
+              {/* Change password — visible to everyone */}
+              <Box component="button" onClick={() => openModal("password")} sx={menuItemSx}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+                Change password
+              </Box>
+
+              {/* Administrators — Admin only */}
+              {isAdmin && (
+                <Box component="button" onClick={() => openModal("admins")} sx={menuItemSx}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 19v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1"/><circle cx="9" cy="7" r="3.2"/><path d="M19 8v5M21.5 10.5h-5"/></svg>
+                  Administrators
                 </Box>
-              ))}
+              )}
+
               <Box sx={{ height: "1px", background: "oklch(0.305 0.010 248)", margin: "6px 4px" }} />
-              <Box component="button" onClick={handleLogout}
-                sx={{ width: "100%", display: "flex", alignItems: "center", gap: "11px", background: "none", border: "none", cursor: "pointer", textAlign: "left", color: "oklch(0.700 0.008 248)", fontFamily: displayFont, fontSize: "13.5px", padding: "10px", borderRadius: "8px", transition: "background .14s ease, color .14s ease", "&:hover": { background: "oklch(0.225 0.008 248)", color: "oklch(0.960 0.004 248)" } }}>
+
+              <Box component="button" onClick={handleLogout} sx={menuItemSx}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 17l5-5-5-5"/><path d="M20 12H9"/><path d="M9 20H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h3"/></svg>
                 Sign out
               </Box>
@@ -307,7 +351,7 @@ export default function Navbar() {
       </Box>
 
       <ChangePasswordModal open={passwordOpen} onClose={() => setPasswordOpen(false)} />
-      <AdminsModal open={adminsOpen} onClose={() => setAdminsOpen(false)} />
+      {isAdmin && <AdminsModal open={adminsOpen} onClose={() => setAdminsOpen(false)} />}
     </>
   );
 }

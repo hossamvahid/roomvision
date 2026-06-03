@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using roomvision.application.Interfaces.Servicies.RoomServices;
 using roomvision.domain.Common;
+using roomvision.presentation.Request.RoomRequest;
 using roomvision.presentation.Response.RoomResponse;
 
 namespace roomvision.presentation.Controllers
@@ -14,12 +15,14 @@ namespace roomvision.presentation.Controllers
         private readonly IScanRoomService _scanRoomService;
         private readonly IScanResultService _scanResultService;
         private readonly IGetRooms _getRooms;
+        private readonly ICreateRoomService _createRoomService;
 
-        public RoomController(IScanRoomService scanRoomService, IScanResultService scanResultService, IGetRooms getRooms)
+        public RoomController(IScanRoomService scanRoomService, IScanResultService scanResultService, IGetRooms getRooms, ICreateRoomService createRoomService)
         {
             _scanRoomService = scanRoomService;
             _scanResultService = scanResultService;
             _getRooms = getRooms;
+            _createRoomService = createRoomService;
         }
 
         [HttpPost("scan")]
@@ -91,6 +94,24 @@ namespace roomvision.presentation.Controllers
         {
             var result = await _getRooms.Execute(page, pageSize);
             return Ok(result.Value);
+        }
+
+        [HttpPost("create")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateRoom([FromBody] CreateRoom request)
+        {
+            var result = await _createRoomService.Execute(request.RoomName!, request.Password!);
+
+            if (result.IsFailure)
+            {
+                return result.ErrorType switch
+                {
+                    ErrorTypes.Conflict => Conflict(new { Error = result.Error }),
+                    _ => StatusCode(500, new { Error = "An unexpected error occurred." })
+                };
+            }
+
+            return Ok();
         }
     }
 }

@@ -60,7 +60,10 @@ namespace roomvision.presentation.Controllers
         [Authorize]
         public IActionResult GetUserRole()
         {
-            var roleClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+            var roleClaim = User.Claims
+                .Where(c => c.Type == ClaimTypes.Role)
+                .FirstOrDefault(c => c.Value == "Admin" || c.Value == "Viewer");
+
             if (roleClaim == null)
             {
                 return Unauthorized(new { Error = "Role claim not found." });

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using roomvision.domain.Common;
 using roomvision.application.Interfaces.Servicies.AccountServices;
+using roomvision.domain.Enums;
 using roomvision.presentation.Request.AccountRequest;
 
 namespace roomvision.presentation.Controllers
@@ -18,24 +19,27 @@ namespace roomvision.presentation.Controllers
     public class AccountController : ControllerBase
     {
         private readonly ICreateAccountService _createAccountService;
+        private readonly IDeleteAccountService _deleteAccountService;
         private readonly IResetAccountPasswordService _resetAccountPasswordService;
         private readonly IGetAccountNameService _getAccountNameService;
         private readonly IGetAccountsService _getAccountsService;
 
         public AccountController(
             ICreateAccountService createAccountService,
+            IDeleteAccountService deleteAccountService,
             IResetAccountPasswordService resetAccountPasswordService,
             IGetAccountNameService getAccountNameService,
             IGetAccountsService getAccountsService)
         {
             _createAccountService = createAccountService;
+            _deleteAccountService = deleteAccountService;
             _resetAccountPasswordService = resetAccountPasswordService;
             _getAccountNameService = getAccountNameService;
             _getAccountsService = getAccountsService;
         }
 
         [HttpPost("create")]
-        [Authorize(Roles = "Account")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateAccount([FromBody] CreateAccount request)
         {
             var result = await _createAccountService.Execute(request.Email!, request.Name!, request.Role);
@@ -105,6 +109,23 @@ namespace roomvision.presentation.Controllers
             return Ok(result.Value);
         }
 
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteAccount(int id)
+        {
+            var result = await _deleteAccountService.Execute(id);
 
+            if (result.IsFailure)
+            {
+                return result.ErrorType switch
+                {
+                    ErrorTypes.NotFound   => NotFound(new { Error = result.Error }),
+                    ErrorTypes.Validation => BadRequest(new { Error = result.Error }),
+                    _ => StatusCode(500, new { Error = "An unexpected error occurred." })
+                };
+            }
+
+            return Ok();
+        }
     }
 }

@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 using roomvision.domain.Enums;
 
 namespace roomvision.presentation.Request.AccountRequest
@@ -17,6 +14,7 @@ namespace roomvision.presentation.Request.AccountRequest
         public string? Name { get; set; }
 
         [Required]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public Role Role { get; set; }
     }
 }
