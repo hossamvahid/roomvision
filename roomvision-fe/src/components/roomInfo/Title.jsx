@@ -5,7 +5,6 @@ import Information from "./Information";
 const monoFont = '"JetBrains Mono", ui-monospace, monospace';
 const displayFont = '"Space Grotesk", sans-serif';
 const ACCENT = "oklch(0.840 0.060 214)";
-const ACCENT_DIM = "oklch(0.840 0.060 214 / 0.16)";
 
 export default function Title({ roomName, totalFaces, totalUnknown, scannedAt }) {
   const navigate = useNavigate();

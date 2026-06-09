@@ -1,0 +1,13 @@
+global using Xunit;
+global using Moq;
+global using log4net;
+global using roomvision.domain.Common;
+global using roomvision.domain.Entities;
+global using roomvision.domain.Enums;
+global using roomvision.domain.Interfaces.Repositories;
+global using roomvision.domain.Interfaces.Security;
+global using roomvision.domain.Interfaces.Generators;
+global using roomvision.domain.Interfaces.FaceRecognition;
+global using roomvision.domain.ValueObjects;
+global using roomvision.application.Models;
+global using roomvision.application.Projections;
