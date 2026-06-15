@@ -2,6 +2,7 @@ export { default as Authenticate } from "./authentication/authenticate";
 export { default as getRooms } from "./room/getRooms";
 export { default as getRole } from "./authentication/getRole";
 export { default as getRoomInfo } from "./room/getRoomInfo";
+export { default as downloadScanReport } from "./room/downloadScanReport";
 export { default as getAccounts } from "./account/getAccounts";
 export { default as getAccountName } from "./account/getAccountName";
 export { default as createAccount } from "./account/createAccount";

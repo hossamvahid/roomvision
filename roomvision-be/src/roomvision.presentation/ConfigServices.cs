@@ -99,6 +99,7 @@ namespace roomvision.presentation
             services.AddScoped<ICreatePersonService, CreatePersonService>();
             services.AddScoped<IScanRoomService, ScanRoomService>();
             services.AddScoped<IScanResultService, ScanResultService>();
+            services.AddScoped<IScanReportService, ScanReportService>();
             services.AddScoped<IGetRooms, GetRooms>();
             services.AddScoped<IGetAccountNameService, GetAccountNameService>();
             services.AddScoped<IGetAccountsService, GetAccountsService>();

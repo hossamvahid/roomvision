@@ -14,13 +14,15 @@ namespace roomvision.presentation.Controllers
     {
         private readonly IScanRoomService _scanRoomService;
         private readonly IScanResultService _scanResultService;
+        private readonly IScanReportService _scanReportService;
         private readonly IGetRooms _getRooms;
         private readonly ICreateRoomService _createRoomService;
 
-        public RoomController(IScanRoomService scanRoomService, IScanResultService scanResultService, IGetRooms getRooms, ICreateRoomService createRoomService)
+        public RoomController(IScanRoomService scanRoomService, IScanResultService scanResultService, IScanReportService scanReportService, IGetRooms getRooms, ICreateRoomService createRoomService)
         {
             _scanRoomService = scanRoomService;
             _scanResultService = scanResultService;
+            _scanReportService = scanReportService;
             _getRooms = getRooms;
             _createRoomService = createRoomService;
         }
@@ -86,6 +88,28 @@ namespace roomvision.presentation.Controllers
             };
 
             return Ok(mappedResult);
+        }
+
+        [HttpGet("scan/report")]
+        [Authorize(Roles = "Account")]
+        public async Task<IActionResult> GetScanReport([FromQuery] string room)
+        {
+            if (string.IsNullOrEmpty(room))
+                return BadRequest("Room name is required.");
+
+            var result = await _scanReportService.Execute(room);
+
+            if (result.IsFailure)
+            {
+                return result.ErrorType switch
+                {
+                    ErrorTypes.NotFound => NotFound(new { Error = result.Error }),
+                    _ => StatusCode(500, new { Error = "An unexpected error occurred." }),
+                };
+            }
+
+            var fileName = $"raport_{room}_{DateTime.UtcNow:yyyyMMdd_HHmm}.pdf";
+            return File(result.Value!, "application/pdf", fileName);
         }
 
         [HttpGet("get")]
