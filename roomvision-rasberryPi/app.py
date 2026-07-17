@@ -19,11 +19,27 @@ ROOM_PASSWORD = os.getenv("ROOM_PASSWORD")
 CAMERA_INDEX = int(os.getenv("CAMERA_INDEX"))
 
 
-DEBOUNCE_SECONDS = float(os.getenv("DEBOUNCE_SECONDS", "2"))
+# Minimum gap between two scans sent to the backend (anti-hammer).
+DEBOUNCE_SECONDS = float(os.getenv("DEBOUNCE_SECONDS", "1"))
 
-POLL_INTERVAL = float(os.getenv("POLL_INTERVAL", "1"))
+# Pause between processed frames. Small value = the loop reacts within a few
+# frames instead of once per second. Detection on the Pi is cheap enough that
+# this mainly caps CPU usage / fps.
+POLL_INTERVAL = float(os.getenv("POLL_INTERVAL", "0.05"))
 
-STABILITY_FRAMES = int(os.getenv("STABILITY_FRAMES", "3"))
+# How many consecutive frames must agree on the new face count before we accept
+# the change. Fewer frames = faster reaction, more = fewer false triggers.
+STABILITY_FRAMES = int(os.getenv("STABILITY_FRAMES", "2"))
+
+# --- Pi performance tuning (all overridable via .env) ---
+# Resolution the camera captures at. Lower = far less CPU/bandwidth on a Pi.
+CAPTURE_WIDTH = int(os.getenv("CAPTURE_WIDTH", "640"))
+CAPTURE_HEIGHT = int(os.getenv("CAPTURE_HEIGHT", "480"))
+# Width the frame is downscaled to *only* for face detection. The full-res
+# frame is still what gets sent to the backend for recognition.
+DETECTION_WIDTH = int(os.getenv("DETECTION_WIDTH", "320"))
+# JPEG quality for the frame uploaded to the backend (1-100).
+JPEG_QUALITY = int(os.getenv("JPEG_QUALITY", "80"))
 
 
 def authenticate(session: requests.Session) -> str:
@@ -36,7 +52,9 @@ def authenticate(session: requests.Session) -> str:
 
 
 def send_scan(session: requests.Session, token: str, frame) -> bool:
-    ok, buf = cv2.imencode(".jpg", frame)
+    ok, buf = cv2.imencode(
+        ".jpg", frame, [int(cv2.IMWRITE_JPEG_QUALITY), JPEG_QUALITY]
+    )
     if not ok:
         log.error("Failed to encode frame as JPEG")
         return False
@@ -67,13 +85,56 @@ def send_scan(session: requests.Session, token: str, frame) -> bool:
 
 def count_faces(detector, frame) -> int:
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+    # Downscale for detection: Haar cascades are O(pixels), so running on a
+    # ~320px-wide image instead of the full frame is several times faster on a
+    # Raspberry Pi while still detecting people at room distance.
+    h, w = gray.shape[:2]
+    if DETECTION_WIDTH and w > DETECTION_WIDTH:
+        scale = DETECTION_WIDTH / w
+        gray = cv2.resize(
+            gray,
+            (DETECTION_WIDTH, int(h * scale)),
+            interpolation=cv2.INTER_AREA,
+        )
+
+    # Normalise lighting so detection is more stable under changing room light.
+    gray = cv2.equalizeHist(gray)
+
     faces = detector.detectMultiScale(
         gray,
         scaleFactor=1.1,
         minNeighbors=5,
-        minSize=(60, 60),
+        minSize=(40, 40),
     )
-    return len(faces) if len(faces) > 0 else 0
+    return len(faces)
+
+
+def open_camera() -> cv2.VideoCapture:
+    cap = cv2.VideoCapture(CAMERA_INDEX)
+    if not cap.isOpened():
+        raise SystemExit(f"Cannot open camera index {CAMERA_INDEX}")
+
+    # MJPG lets most USB cameras deliver frames at higher fps with less CPU on
+    # the Pi (the sensor does the JPEG work instead of the CPU).
+    cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, CAPTURE_WIDTH)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, CAPTURE_HEIGHT)
+    # Keep only the newest frame in the driver buffer so we never process a
+    # stale image queued while we were sleeping/uploading.
+    cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+
+    # Warm up: discard the first few frames while the sensor auto-exposes.
+    for _ in range(5):
+        cap.read()
+
+    log.info(
+        "Camera opened (index %d) at %dx%d",
+        CAMERA_INDEX,
+        int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
+        int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)),
+    )
+    return cap
 
 
 def main():
@@ -85,10 +146,7 @@ def main():
     if detector.empty():
         raise SystemExit(f"Failed to load Haar cascade from {cascade_path}")
 
-    cap = cv2.VideoCapture(CAMERA_INDEX)
-    if not cap.isOpened():
-        raise SystemExit(f"Cannot open camera index {CAMERA_INDEX}")
-    log.info("Camera opened (index %d)", CAMERA_INDEX)
+    cap = open_camera()
 
     session = requests.Session()
     token = authenticate(session)
@@ -100,7 +158,8 @@ def main():
 
     try:
         while True:
-            ret, frame = cap.read()
+            cap.grab()
+            ret, frame = cap.retrieve()
             if not ret:
                 log.warning("Failed to grab frame, retrying…")
                 time.sleep(1)
@@ -108,7 +167,6 @@ def main():
 
             current_count = count_faces(detector, frame)
 
-           
             if current_count == candidate_count:
                 candidate_streak += 1
             else:

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>RoomVision — evaluare numarare persoane</title>
+<style>
+  :root{
+    --bg:#ffffff; --card:#ffffff; --card2:#f6f7f9; --line:#e3e6ea;
+    --txt:#1a1d23; --muted:#5f6875; --accent:#2f6bff;
+    --ok:#1f9d63; --over:#d98319; --under:#d1452a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.5}
+  .wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
+  h1{font-size:22px;font-weight:600;margin:0 0 4px}
+  .sub{color:var(--muted);font-size:13px;margin-bottom:22px}
+  .best{font-size:11px;background:var(--accent);color:#fff;padding:2px 8px;border-radius:6px}
+  .detsec{margin-top:34px;padding-top:22px;border-top:1px solid var(--line)}
+  .dethead{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+  .dethead h2{font-size:18px;font-weight:600;margin:0}
+  .dstat{color:var(--muted);font-size:13px}
+  .empty{color:var(--muted);font-size:13px;padding:8px 0}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:22px}
+  .metric{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .metric .lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+  .metric .val{font-size:28px;font-weight:600;margin-top:6px}
+  .metric .hint{font-size:12px;color:var(--muted);margin-top:2px}
+  .brk{font-size:14px;color:var(--muted);margin-top:14px}
+  .brk b{color:var(--txt);font-weight:600}
+  .brk .ok{color:var(--ok)} .brk .over{color:var(--over)} .brk .under{color:var(--under)}
+  .cmp{width:100%;border-collapse:collapse;margin-top:8px;font-size:14px}
+  .cmp th,.cmp td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+  .cmp th{color:var(--muted);font-weight:500;font-size:12px;text-transform:uppercase}
+  .cmp td.n{text-align:right;font-variant-numeric:tabular-nums}
+  details{margin-top:26px}
+  summary{cursor:pointer;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Evaluare numarare persoane in incaperi</h1>
+
+  <details open>
+    <summary>Comparatie intre detectoare</summary>
+    <table class="cmp" id="cmp"></table>
+  </details>
+
+  <div id="sections"></div>
+</div>
+
+<script>
+const DATA = {"generated_at": "2026-07-04 02:19:58", "dataset_dir": "/Users/hossamvahid/Workspace/roomvision/roomvision-scripts/metrics/dataset_rooms", "best_detector": "CNN", "images_meta": {"2.2.jpg": {"true": 2}, "2.3.jpg": {"true": 2}, "2.4.jpg": {"true": 2}, "Hossam.jpg": {"true": 1}, "a1.jpg": {"true": 1}, "a2.jpg": {"true": 1}, "a3.jpg": {"true": 1}, "a4.jpg": {"true": 1}, "an1.jpg": {"true": 1}, "an2.jpg": {"true": 1}, "an3.jpg": {"true": 1}, "an4.jpg": {"true": 1}, "anas.jpg": {"true": 1}, "anastasia.jpg": {"true": 1}, "b1.jpg": {"true": 1}, "b2.jpg": {"true": 1}, "b3.jpg": {"true": 1}, "b4.jpg": {"true": 1}, "bianca.jpg": {"true": 1}, "catalin.jpg": {"true": 1}, "fratila.jpg": {"true": 1}, "group2.jpg": {"true": 2}, "group3.2.jpg": {"true": 3}, "group3.jpg": {"true": 3}, "group4.3.jpg": {"true": 4}, "group5.jpg": {"true": 5}, "group6.2.jpg": {"true": 6}, "group6.jpg": {"true": 6}, "hossam1.jpg": {"true": 1}, "hossam2.jpg": {"true": 1}, "hossam3.jpg": {"true": 1}}, "detectors": {"MTCNN": {"metrics": {"images": 31, "accuracy": 0.9032258064516129, "precision": 0.9818181818181818, "recall": 0.9642857142857143, "f1": 0.972972972972973, "tp": 54, "fp": 1, "fn": 2, "total_true": 56, "total_pred": 55, "avg_time_ms": 401.0, "n_exact": 28, "n_over": 1, "n_under": 2}, "per_image": [{"file": "2.2.jpg", "true": 2, "pred": 2, "diff": 0, "status": "exact", "time_ms": 687.7}, {"file": "2.3.jpg", "true": 2, "pred": 1, "diff": -1, "status": "under", "time_ms": 585.3}, {"file": "2.4.jpg", "true": 2, "pred": 1, "diff": -1, "status": "under", "time_ms": 553.7}, {"file": "Hossam.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 583.5}, {"file": "a1.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 320.9}, {"file": "a2.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 320.0}, {"file": "a3.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 358.2}, {"file": "a4.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 317.1}, {"file": "an1.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 321.8}, {"file": "an2.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 345.1}, {"file": "an3.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 328.2}, {"file": "an4.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 328.3}, {"file": "anas.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 338.1}, {"file": "anastasia.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 347.4}, {"file": "b1.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 391.2}, {"file": "b2.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 333.0}, {"file": "b3.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 340.8}, {"file": "b4.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 356.3}, {"file": "bianca.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 331.6}, {"file": "catalin.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 347.4}, {"file": "fratila.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 355.7}, {"file": "group2.jpg", "true": 2, "pred": 2, "diff": 0, "status": "exact", "time_ms": 344.7}, {"file": "group3.2.jpg", "true": 3, "pred": 3, "diff": 0, "status": "exact", "time_ms": 366.6}, {"file": "group3.jpg", "true": 3, "pred": 3, "diff": 0, "status": "exact", "time_ms": 356.2}, {"file": "group4.3.jpg", "true": 4, "pred": 4, "diff": 0, "status": "exact", "time_ms": 394.0}, {"file": "group5.jpg", "true": 5, "pred": 5, "diff": 0, "status": "exact", "time_ms": 376.6}, {"file": "group6.2.jpg", "true": 6, "pred": 6, "diff": 0, "status": "exact", "time_ms": 380.9}, {"file": "group6.jpg", "true": 6, "pred": 7, "diff": 1, "status": "over", "time_ms": 390.6}, {"file": "hossam1.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 547.2}, {"file": "hossam2.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 536.7}, {"file": "hossam3.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 545.8}]}, "CNN": {"metrics": {"images": 31, "accuracy": 1.0, "precision": 1.0, "recall": 1.0, "f1": 1.0, "tp": 56, "fp": 0, "fn": 0, "total_true": 56, "total_pred": 56, "avg_time_ms": 4440.6, "n_exact": 31, "n_over": 0, "n_under": 0}, "per_image": [{"file": "2.2.jpg", "true": 2, "pred": 2, "diff": 0, "status": "exact", "time_ms": 13751.4}, {"file": "2.3.jpg", "true": 2, "pred": 2, "diff": 0, "status": "exact", "time_ms": 11671.5}, {"file": "2.4.jpg", "true": 2, "pred": 2, "diff": 0, "status": "exact", "time_ms": 11721.1}, {"file": "Hossam.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 12990.2}, {"file": "a1.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 2331.8}, {"file": "a2.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 2080.1}, {"file": "a3.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 2095.9}, {"file": "a4.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 2050.7}, {"file": "an1.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 2046.0}, {"file": "an2.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 2089.3}, {"file": "an3.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 2056.1}, {"file": "an4.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 2068.0}, {"file": "anas.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 2062.1}, {"file": "anastasia.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 2050.1}, {"file": "b1.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 2083.2}, {"file": "b2.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 2159.8}, {"file": "b3.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 2104.5}, {"file": "b4.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 2071.6}, {"file": "bianca.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 2704.1}, {"file": "catalin.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 2171.3}, {"file": "fratila.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 2067.7}, {"file": "group2.jpg", "true": 2, "pred": 2, "diff": 0, "status": "exact", "time_ms": 2078.5}, {"file": "group3.2.jpg", "true": 3, "pred": 3, "diff": 0, "status": "exact", "time_ms": 2072.7}, {"file": "group3.jpg", "true": 3, "pred": 3, "diff": 0, "status": "exact", "time_ms": 2074.4}, {"file": "group4.3.jpg", "true": 4, "pred": 4, "diff": 0, "status": "exact", "time_ms": 2151.6}, {"file": "group5.jpg", "true": 5, "pred": 5, "diff": 0, "status": "exact", "time_ms": 2087.0}, {"file": "group6.2.jpg", "true": 6, "pred": 6, "diff": 0, "status": "exact", "time_ms": 2187.7}, {"file": "group6.jpg", "true": 6, "pred": 6, "diff": 0, "status": "exact", "time_ms": 2172.4}, {"file": "hossam1.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 10821.5}, {"file": "hossam2.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 12775.4}, {"file": "hossam3.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 12811.8}]}, "HOG": {"metrics": {"images": 31, "accuracy": 0.8064516129032258, "precision": 1.0, "recall": 0.8571428571428571, "f1": 0.923076923076923, "tp": 48, "fp": 0, "fn": 8, "total_true": 56, "total_pred": 48, "avg_time_ms": 419.7, "n_exact": 25, "n_over": 0, "n_under": 6}, "per_image": [{"file": "2.2.jpg", "true": 2, "pred": 0, "diff": -2, "status": "under", "time_ms": 882.7}, {"file": "2.3.jpg", "true": 2, "pred": 1, "diff": -1, "status": "under", "time_ms": 867.1}, {"file": "2.4.jpg", "true": 2, "pred": 0, "diff": -2, "status": "under", "time_ms": 877.6}, {"file": "Hossam.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 859.2}, {"file": "a1.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 293.5}, {"file": "a2.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 287.8}, {"file": "a3.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 284.7}, {"file": "a4.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 288.5}, {"file": "an1.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 288.9}, {"file": "an2.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 286.2}, {"file": "an3.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 287.3}, {"file": "an4.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 286.1}, {"file": "anas.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 289.1}, {"file": "anastasia.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 284.9}, {"file": "b1.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 287.3}, {"file": "b2.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 289.9}, {"file": "b3.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 288.5}, {"file": "b4.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 289.7}, {"file": "bianca.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 294.0}, {"file": "catalin.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 289.8}, {"file": "fratila.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 291.7}, {"file": "group2.jpg", "true": 2, "pred": 2, "diff": 0, "status": "exact", "time_ms": 286.0}, {"file": "group3.2.jpg", "true": 3, "pred": 3, "diff": 0, "status": "exact", "time_ms": 289.0}, {"file": "group3.jpg", "true": 3, "pred": 3, "diff": 0, "status": "exact", "time_ms": 287.7}, {"file": "group4.3.jpg", "true": 4, "pred": 4, "diff": 0, "status": "exact", "time_ms": 286.2}, {"file": "group5.jpg", "true": 5, "pred": 5, "diff": 0, "status": "exact", "time_ms": 290.8}, {"file": "group6.2.jpg", "true": 6, "pred": 5, "diff": -1, "status": "under", "time_ms": 286.5}, {"file": "group6.jpg", "true": 6, "pred": 5, "diff": -1, "status": "under", "time_ms": 288.9}, {"file": "hossam1.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 864.1}, {"file": "hossam2.jpg", "true": 1, "pred": 0, "diff": -1, "status": "under", "time_ms": 866.5}, {"file": "hossam3.jpg", "true": 1, "pred": 1, "diff": 0, "status": "exact", "time_ms": 869.0}]}}};
+const pct = v => (v*100).toFixed(1) + "%";
+const fnum = v => (Math.round(v*1000)/1000).toFixed(3);
+
+function card(lbl, val, hint){
+  return `<div class="metric"><div class="lbl">${lbl}</div><div class="val">${val}</div>`+
+         (hint?`<div class="hint">${hint}</div>`:'')+`</div>`;
+}
+
+function renderCmp(){
+  const rows = Object.entries(DATA.detectors).map(([name,d])=>{
+    const m = d.metrics;
+    const star = name===DATA.best_detector ? " ★" : "";
+    return `<tr>
+      <td>${name}${star}</td>
+      <td class="n">${pct(m.accuracy)}</td>
+      <td class="n">${fnum(m.precision)}</td>
+      <td class="n">${fnum(m.recall)}</td>
+      <td class="n">${fnum(m.f1)}</td>
+      <td class="n">${m.avg_time_ms} ms</td>
+    </tr>`;
+  }).join("");
+  document.getElementById("cmp").innerHTML =
+    `<tr><th>Detector</th><th style="text-align:right">Accuracy</th>
+     <th style="text-align:right">Precision</th><th style="text-align:right">Recall</th>
+     <th style="text-align:right">F1</th>
+     <th style="text-align:right">Viteza medie</th></tr>` + rows;
+}
+
+function renderSections(){
+  const el = document.getElementById("sections"); el.innerHTML = "";
+  for(const [name, d] of Object.entries(DATA.detectors)){
+    const m = d.metrics;
+    const best = name===DATA.best_detector ? '<span class="best">cel mai bun F1</span>' : '';
+    const cards =
+      card("Accuracy", pct(m.accuracy), "numar exact nimerit") +
+      card("Precision", fnum(m.precision), "din persoanele detectate") +
+      card("Recall", fnum(m.recall), "din persoanele reale") +
+      card("F1 score", fnum(m.f1)) +
+      card("Viteza medie", `${m.avg_time_ms} ms`, "timp mediu pe poza");
+    el.insertAdjacentHTML("beforeend", `
+      <section class="detsec">
+        <div class="dethead">
+          <h2>${name}</h2>${best}
+        </div>
+        <div class="cards">${cards}</div>
+      </section>`);
+  }
+}
+
+renderCmp(); renderSections();
+</script>
+</body>
+</html>

@@ -17,4 +17,4 @@ protos/*_pb2_grpc.py
 *.log
 *.tmp
 *.bak
-
+metrics/dataset_rooms
